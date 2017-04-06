@@ -1,7 +1,7 @@
 @echo off
 
 if exist "stop.txt" (
-	rm "stop.txt"
+	del "stop.txt"
 )
 
 :loop

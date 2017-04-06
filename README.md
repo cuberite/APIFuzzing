@@ -1,6 +1,6 @@
 # APIFuzzing
 
-This is a plugin writen in lua for cuberite. As the plugin name already indicates it's used for fuzzing and checking the cuberite lua api.
+This is a plugin written in lua for cuberite. As the plugin name already indicates it's used for fuzzing and it can check the cuberite lua api.
 
 There are two commands
 * fuzzing
