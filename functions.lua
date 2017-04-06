@@ -15,7 +15,7 @@ function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 					end
 				end
 				if g_ObjectToTypeName[rType] == nil then
-					print(a_ClassName, a_FunctionName)
+					LOG(a_ClassName, a_FunctionName)
 					assert(false, "ObjectToTypeName: Not handled " .. rType)
 				end
 			end
@@ -82,7 +82,7 @@ function CheckIfCrashed()
 	end
 
 	fileCrashed:close()
-	os.execute("rm " .. g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed.txt")
+	cFile:DeleteFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed.txt")
 	SaveTableIgnore()
 	SaveTableCrashed()
 end

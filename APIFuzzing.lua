@@ -86,6 +86,12 @@ function RunFuzzing(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
+			local inputs
+			local params = GetParamTypes(tbFncInfo, functionName)
+			if params ~= nil then
+				inputs = CreateInputs(className, functionName, params, true)
+			end
+
 			if
 				g_IgnoreShared[className] ~= "*" and
 				g_IgnoreShared[className][functionName] == nil and
@@ -97,15 +103,10 @@ function RunFuzzing(a_API)
 				functionName ~= "operator_eq" and
 				functionName ~= "operator_mul" and
 				functionName ~= "operator_plus" and
-				functionName ~= "operator_sub"
+				functionName ~= "operator_sub" and
+				inputs ~= nil
 			then
-				local params = GetParamTypes(tbFncInfo, functionName)
-				if params ~= nil then
-					local inputs = CreateInputs(className, functionName, params, true)
-					if inputs ~= nil then
-						FunctionsWithParams(a_API, className, functionName, nil, inputs, true)
-					end
-				end
+				FunctionsWithParams(a_API, className, functionName, nil, inputs, true)
 			end
 		end
 	end
@@ -266,8 +267,6 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 
 	assert(fncTest ~= "", "Not handled: " .. a_ClassName .. "\t" .. a_FunctionName)
 
-
-
 	-- Load function, check for syntax problems
 	local fnc, errSyntax = loadstring(fncTest)
 	if fnc == nil then
@@ -282,13 +281,23 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		assert(false, "Runtime of plugin stopped, because of syntax error.")
 	end
 
-	-- Call function
-	local status, errRuntime = pcall(fnc)
-
+	local status, errRuntime
 	if a_IsFuzzing then
+		 -- Save class name, function and params, in case of a crash
+		 SaveCurrentTest(a_ClassName, a_FunctionName, fncTest)
+
+		-- Add to table ignore
+		g_Ignore[a_ClassName][a_FunctionName] = true
+		SaveTableIgnore()
+
+		-- Call function
+		status, errRuntime = pcall(fnc)
+
 		-- Fuzzing in proccess, bail out. Makes no sense to run the code below,
 		-- if intentionally invalid params are passed :)
 		return
+	else
+                status, errRuntime = pcall(fnc)
 	end
 
 	-- Check if an error occurred. NOTE: A error that occurred inside of a callback, can not be catched
@@ -317,8 +326,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	-- Check the return types
 	-- NOTE: There can be false positives. For example for function GetSignLines from cWorld.
 	-- If the block is not a sign it will correctly return 1 value instead of the expected 5.
-	-- There are currently two ideas. (TODO)
-	-- 1) Adding code that will place a sign, before the call will be made
+	-- Currently two ideas:
+	-- 1) Improve the test code. For example for the sign,  place a sign before the call will be made
 	-- 2) If the output is a false positive. Add the function to the table g_FalsePositives in tables.lua
 
 	if g_FalsePositives[a_ClassName] ~= nil and g_FalsePositives[a_ClassName][a_FunctionName] == true  then
