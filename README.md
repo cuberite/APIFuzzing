@@ -7,6 +7,8 @@ There are two commands
 * checkapi
 
 # Fuzzing
+The runme file has to be copied to the root folder of Cuberite, before running it.
+
 ### Windows
 Run the file runme.bat and it will startup Cuberite.
 
