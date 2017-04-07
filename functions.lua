@@ -31,13 +31,13 @@ end
 
 function GatherReturnValues(...)
 	if arg.n == 0 then
-		RETURN_VALUES = nil
+		g_ReturnTypes = nil
 	elseif arg[1] == nil and arg.n == 1 then
-		RETURN_VALUES = nil
+		g_ReturnTypes = nil
 	else
-		RETURN_VALUES = {}
+		g_ReturnTypes = {}
 		for _, r in ipairs(arg) do
-			table.insert(RETURN_VALUES, type(r))
+			table.insert(g_ReturnTypes, type(r))
 		end
 	end
 end
@@ -176,63 +176,63 @@ end
 -- Returns table with tables of param types or nil
 -- Also add flag IsStatic, if present
 function GetParamTypes(a_FncInfo, a_FunctionName)
-	local params = {}
+	local paramTypes = {}
 	if a_FncInfo.Params ~= nil then
 		for _, param in ipairs(a_FncInfo.Params) do
-			table.insert(params, param.Type)
+			table.insert(paramTypes, param.Type)
 		end
 		if a_FncInfo.IsStatic then
-			params.IsStatic = true
+			paramTypes.IsStatic = true
 		end
-		return { params }
+		return { paramTypes }
 	end
 
-	local hasParams = false
+	local hasParamTypes = false
 	for _, tb in ipairs(a_FncInfo) do
 		local temp = {}
 		if tb.Params ~= nil then
 			for _, param in pairs(tb.Params) do
-				hasParams = true
+				hasParamTypes = true
 				table.insert(temp, param.Type)
 			end
 		end
 		if tb.IsStatic then
 			temp.IsStatic = true
 		end
-		table.insert(params, temp)
+		table.insert(paramTypes, temp)
 	end
-	if hasParams then
-		return params
-	else
-		return nil
+	if hasParamTypes then
+		return paramTypes
 	end
+
+	return nil
 end
 
 
 
 function GetReturnTypes(a_FncInfo, a_ClassName, a_FunctionName)
-	local returns = {}
+	local returnTypes = {}
 	if a_FncInfo.Returns ~= nil then
 		for _, ret in ipairs(a_FncInfo.Returns) do
-			table.insert(returns, ret.Type)
+			table.insert(returnTypes, ret.Type)
 		end
-		return { returns }
+		return { returnTypes }
 	end
 
-	local hasReturns = false
+	local hasReturnTypes = false
 	for _, tb in ipairs(a_FncInfo) do
 		local temp = {}
 		if tb.Returns ~= nil then
 			for _, ret in pairs(tb.Returns) do
-				hasReturns = true
+				hasReturnTypes = true
 				table.insert(temp, ret.Type)
 			end
 		end
-		table.insert(returns, temp)
+		table.insert(returnTypes, temp)
 	end
-	if hasReturns then
-		return returns
-	else
-		return nil
+	if hasReturnTypes then
+		return returnTypes
 	end
+
+	return nil
 end

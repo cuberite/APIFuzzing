@@ -281,7 +281,6 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		assert(false, "Runtime of plugin stopped, because of syntax error.")
 	end
 
-	local status, errRuntime
 	if a_IsFuzzing then
 		 -- Save class name, function and params, in case of a crash
 		 SaveCurrentTest(a_ClassName, a_FunctionName, fncTest)
@@ -291,14 +290,14 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		SaveTableIgnore()
 
 		-- Call function
-		status, errRuntime = pcall(fnc)
+		pcall(fnc)
 
 		-- Fuzzing in proccess, bail out. Makes no sense to run the code below,
 		-- if intentionally invalid params are passed :)
 		return
-	else
-                status, errRuntime = pcall(fnc)
 	end
+
+	local status, errRuntime = pcall(fnc)
 
 	-- Check if an error occurred. NOTE: A error that occurred inside of a callback, can not be catched
 	if not(status) then
@@ -334,38 +333,34 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		return
 	end
 
-	local title
+	local title = "########################## AMOUNT OF RETURN TYPES DOESN'T MATCH ########################################"
 	local retGot = "nil"
 	local retAPIDoc = "nil"
 	local catched = false
-	if RETURN_VALUES ~= nil and a_ReturnTypes ~= nil then
-		if #RETURN_VALUES ~= #a_ReturnTypes then
-			title = "########################## AMOUNT OF RETURN TYPES DOESN'T MATCH ########################################"
+	if g_ReturnTypes ~= nil and a_ReturnTypes ~= nil then
+		if #g_ReturnTypes ~= #a_ReturnTypes then
 			catched = true
-			retGot = table.concat(RETURN_VALUES, ", ")
+			retGot = table.concat(g_ReturnTypes, ", ")
 			retAPIDoc = table.concat(ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes), ", ")
-		elseif #RETURN_VALUES == #a_ReturnTypes then
+		elseif #g_ReturnTypes == #a_ReturnTypes then
 			title = "##################################### RETURN TYPES DOESN'T MATCH ########################################"
-			retGot = table.concat(RETURN_VALUES, ", ")
+			retGot = table.concat(g_ReturnTypes, ", ")
 			retAPIDoc = table.concat(ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes), ", ")
 			-- Same amount, check if return types are equal
 			if retGot ~= retAPIDoc then
 				catched = true
 			end
 		end
-	elseif RETURN_VALUES == nil and a_ReturnTypes ~= nil then
-		title = "########################## AMOUNT OF RETURN TYPES DOESN'T MATCH ########################################"
+	elseif g_ReturnTypes == nil and a_ReturnTypes ~= nil then
 		catched = true
 		retAPIDoc = table.concat(ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes), ", ")
-	elseif RETURN_VALUES ~= nil and a_ReturnTypes == nil then
-		title = "########################## AMOUNT OF RETURN TYPES DOESN'T MATCH ########################################"
+	elseif g_ReturnTypes ~= nil and a_ReturnTypes == nil then
 		catched = true
-		retGot = table.concat(RETURN_VALUES, ", ")
+		retGot = table.concat(g_ReturnTypes, ", ")
 	end
 
 	if catched then
 		LOG(title)
-		LOG("")
 		LOG("")
 		LOG("                                             ## Code ##")
 		LOG("\n" .. fncTest)
