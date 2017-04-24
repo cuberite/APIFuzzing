@@ -100,14 +100,18 @@ end
 
 
 function LoadTableIgnore()
-	local fncIgnore = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")
-	if fncIgnore ~= nil then
-		g_Ignore = fncIgnore()
+	-- Check if file exists
+	if not(cFile:IsFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")) then
+			g_Ignore = {}
+			return
 	end
 
-	if g_Ignore == nil then
-		g_Ignore = {}
+	local fncIgnore = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")
+	if (fncIgnore == nil) then
+		io.open("stop.txt", "w")
+		assert(false,  "The file ignore_table.txt could not be loaded.")
 	end
+	g_Ignore = fncIgnore()
 end
 
 
@@ -137,13 +141,18 @@ end
 
 
 function LoadTableCrashed()
+	-- Check if file exists
+	if not(cFile:IsFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")) then
+			g_Crashed = {}
+			return
+	end
+
 	local fncCrashed = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")
-	if fncCrashed ~= nil then
-		g_Crashed = fncCrashed()
+	if (fncCrashed == nil) then
+		io.open("stop.txt", "w")
+		assert(false,  "The file crashed_table.txt could not be loaded.")
 	end
-	if g_Crashed == nil then
-		g_Crashed = {}
-	end
+	g_Crashed = fncCrashed()
 end
 
 
@@ -157,7 +166,7 @@ function SaveTableCrashed()
 		if tbFunctions ~= "*" then
 			for functionName, funcTest in pairs(tbFunctions) do
 				writeIt = true
-				s = s .. "\t\t" .. functionName .. " = '" .. funcTest .. "',\n"
+				s = s .. "\t\t" .. functionName .. " = \"" .. funcTest .. "\",\n"
 			end
 			s = s .. "\t},\n"
 		end

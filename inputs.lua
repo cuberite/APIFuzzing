@@ -115,6 +115,12 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
 	end
 
+	tmp = {}
+	for i = 1, #a_Params do
+		tmp[i] = E_ITEM_BED
+	end
+	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
+
 	return inputs
 end
 
