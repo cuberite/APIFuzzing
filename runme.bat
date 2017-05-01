@@ -5,7 +5,7 @@ if exist "stop.txt" (
 )
 
 :loop
-	Cuberite.exe
+	echo fuzzing  | Cuberite.exe
 	
 	REM If file stop.txt has been created, fuzzing is done
 	if exist "stop.txt" (

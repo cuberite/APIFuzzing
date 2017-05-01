@@ -6,7 +6,10 @@ fi
 
 while [ true ]
 do
-	./Cuberite
+	./Cuberite << EOF
+fuzzing
+stop
+EOF
 
 	# If file stop.txt has been created, fuzzing is done
 	if [ -f stop.txt ]

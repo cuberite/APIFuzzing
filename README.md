@@ -16,10 +16,10 @@ Run the file runme.bat and it will startup Cuberite.
 Run the file runme.sh and it will startup Cuberite.
 
 ### Running
-If the server is started up run the console command `fuzzing`. After every restart you need to run the command again.
+The server will be started and runs the console command `fuzzing`.
 If an crash occurs:
-* Under linux the script will automatically restart cuberite
-* Under windows, you need to close the debugger message box that will appear and then cuberite will start again
+* Under linux the script will automatically restart cuberite and run the command again
+* Under windows, you need to close the debugger message box that will appear, then cuberite will start and run the command again
 
 The message `Fuzzing completed!` will be printed in the console, if the plugin is finished.
 If an crash has occured, in the home directory of the plugin will be a file named `crashed_table.txt`.
