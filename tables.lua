@@ -108,7 +108,7 @@ function CreateTables()
 	g_ObjectToTypeName["Globals#eShrapnelLevel"] = "number"
 
 
-	-- This list contains that causes false positives
+	-- This list contains functions that causes false positives
 	-- TODO: Add better test code for the functions below to correct them
 	g_FalsePositives = {}
 	g_FalsePositives["cBoundingBox"] = {}
@@ -149,15 +149,6 @@ function CreateSharedIgnoreTable()
 	-- Documented, but not exported
 	g_IgnoreShared["cCompositeChat"]["AddShowAchievementPart"] = true
 	g_IgnoreShared["cDispenserEntity"]["SpawnProjectileFromDispenser"] = true
-
-	-- Documented, but doesn't exists
-	g_IgnoreShared["cBlockInfo"]["RequiresSpecialTool"] = true
-	g_IgnoreShared["cDropSpenserEntity"]["SetRedstonePower"] = true
-	g_IgnoreShared["cEntity"]["GetRot"] = true
-	g_IgnoreShared["cEntity"]["SetRot"] = true
-	g_IgnoreShared["cRoot"]["GetPrimaryServerVersion"] = true
-	g_IgnoreShared["cRoot"]["SetPrimaryServerVersion"] = true
-	g_IgnoreShared["cWorld"]["QueueSetBlock"] = true
 
 	-- Deprecated
 	g_IgnoreShared["cWebAdmin"]["GetURLEncodedString"] = true
@@ -257,7 +248,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared["cPluginLua"] = "*"
 	g_IgnoreShared["cPluginManager"] = "*"
 
-	-- Is checked in clases that inherit from it
+	-- Is checked in classes that inherit from it
 	g_IgnoreShared["cBlockEntity"] = "*"
 	g_IgnoreShared["cBlockEntityWithItems"] = "*"
 
