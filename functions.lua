@@ -102,8 +102,8 @@ end
 function LoadTableIgnore()
 	-- Check if file exists
 	if not(cFile:IsFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")) then
-			g_Ignore = {}
-			return
+		g_Ignore = {}
+		return
 	end
 
 	local fncIgnore = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")
@@ -143,8 +143,8 @@ end
 function LoadTableCrashed()
 	-- Check if file exists
 	if not(cFile:IsFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")) then
-			g_Crashed = {}
-			return
+		g_Crashed = {}
+		return
 	end
 
 	local fncCrashed = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")
@@ -158,8 +158,8 @@ end
 
 
 function SaveTableCrashed()
-	local fileIgnore = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt", "w")
-	fileIgnore:write("return\n{\n")
+	local fileCrashed = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt", "w")
+	fileCrashed:write("return\n{\n")
 	for className, tbFunctions in pairs(g_Crashed) do
 		local s = "\t" .. className .. " =\n\t{\n"
 		local writeIt = false
@@ -171,12 +171,12 @@ function SaveTableCrashed()
 			s = s .. "\t},\n"
 		end
 		if writeIt then
-			fileIgnore:write(s)
+			fileCrashed:write(s)
 		end
 
 	end
-	fileIgnore:write("}\n")
-	fileIgnore:close()
+	fileCrashed:write("}\n")
+	fileCrashed:close()
 end
 
 
