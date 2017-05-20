@@ -5,44 +5,44 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 		table.insert(inputs, CreateValidParams(a_ClassName, a_FunctionName, tbParams))
 	end
 
-	-- Check if a param has value nil
-	-- Also add IsStatic flag, if necessary
-	for i = 1,#inputs do
-		-- Add IsStatic flag
-		if a_Params[i].IsStatic then
-			inputs[i].IsStatic = true
-		end
-
-		for index, param in ipairs(inputs[i]) do
-			if param == "nil" then
-				-- Not handled for now
-				if
-					a_Params[i][index] == "..." or
-					a_Params[i][index] == "<unknown>" or
-					a_Params[i][index] == "any" or
-					a_Params[i][index] == "cBlockArea" or
-					a_Params[i][index] == "cClientHandle" or
-					a_Params[i][index] == "cCraftingGrid" or
-					a_Params[i][index] == "cEntity" or
-					a_Params[i][index] == "cEntityEffect" or
-					a_Params[i][index] == "cIniFile" or
-					a_Params[i][index] == "cMonster" or
-					a_Params[i][index] == "cPlayer" or
-					a_Params[i][index] == "cTeam" or
-					a_Params[i][index] == "cWindow" or
-					a_Params[i][index] == "function" or
-					a_Params[i][index] == "HTTPRequest"
-				then
-					return nil
-				end
-				print(a_ClassName, a_FunctionName)
-				assert(false, "The param " .. a_Params[i][index] .. " has value nil.")
-			end
-		end
+        -- Add IsStatic flag, if necessary
+        for i = 1,#inputs do
+                -- Add IsStatic flag
+                if a_Params[i].IsStatic then
+                        inputs[i].IsStatic = true
+                end
 	end
 
-	-- If a_Fuzzing is false, only return valid inputs
+	-- If we are not fuzzing. Check if a param has value nil.
 	if not(a_Fuzzing) then
+		for i = 1,#inputs do
+			for index, param in ipairs(inputs[i]) do
+				if param == "nil" then
+					-- Not handled for now
+					if
+						a_Params[i][index] == "..." or
+						a_Params[i][index] == "<unknown>" or
+						a_Params[i][index] == "any" or
+						a_Params[i][index] == "cBlockArea" or
+						a_Params[i][index] == "cClientHandle" or
+						a_Params[i][index] == "cCraftingGrid" or
+						a_Params[i][index] == "cEntity" or
+						a_Params[i][index] == "cEntityEffect" or
+						a_Params[i][index] == "cIniFile" or
+						a_Params[i][index] == "cMonster" or
+						a_Params[i][index] == "cPlayer" or
+						a_Params[i][index] == "cTeam" or
+						a_Params[i][index] == "cWindow" or
+						a_Params[i][index] == "function" or
+						a_Params[i][index] == "HTTPRequest"
+					then
+						return nil
+					end
+					print(a_ClassName, a_FunctionName)
+					assert(false, "The param " .. a_Params[i][index] .. " has value nil.")
+				end
+			end
+		end
 		return inputs
 	end
 
@@ -118,6 +118,20 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	tmp = {}
 	for i = 1, #a_Params do
 		tmp[i] = E_ITEM_BED
+	end
+	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
+
+       for i = 1, 10 do
+               tmp = {}
+               for i = 1, #a_Params do
+                       tmp[i] = math.random(-100000000000, 10000000000)
+               end
+               table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
+       end
+
+	tmp = {}
+	for i = 1, #a_Params do
+		tmp[i] = 1
 	end
 	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
 
