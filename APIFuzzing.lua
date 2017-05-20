@@ -6,6 +6,10 @@ function Initialize(a_Plugin)
 	a_Plugin:SetName( "APIFuzzing" )
 	a_Plugin:SetVersion( 1 )
 
+	-- Random, random
+	math.randomseed(os.time())
+	math.random(); math.random(); math.random()
+
 	-- Create and load tables
 	CreateTables()
 	LoadTableIgnore()
