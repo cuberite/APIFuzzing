@@ -186,6 +186,9 @@ function CreateSharedIgnoreTable()
 
 	-- ## Whole class ignored ##
 
+	-- Deprecated
+	g_IgnoreShared["cTracer"] = "*"
+
 	-- Requires a placed painting
 	g_IgnoreShared["cPainting"] = "*"
 
@@ -194,8 +197,10 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared["cRankManager"] = "*"
 	g_IgnoreShared["cStringCompression"] = "*"
 
-	-- Requires a spawned pickup
+	-- Requires the spawned entity
 	g_IgnoreShared["cPickup"] = "*"
+	g_IgnoreShared["cExpOrb"] = "*"
+	g_IgnoreShared["cFallingBlock"] = "*"
 
 	-- Database
 	g_IgnoreShared["sqlite3"] = "*"
