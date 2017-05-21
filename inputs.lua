@@ -152,8 +152,10 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 					inputs[index] = "'Infinity'"
 				end
 			elseif a_ClassName == "cWorld" then
-				if a_FunctionName == "MoveToWorld" then
-					inputs[index] = "'world'"
+				if a_ClassName == "cLineBlockTracer" then
+					if a_FunctionName == "FirstSolidHitTrace" then
+						inputs[index] = "world"
+					end
 				end
 			elseif a_ClassName == "cRoot" then
 				if a_FunctionName == "GetWorld" then
@@ -172,8 +174,26 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			end
 
 		elseif param == "number" then
-			if a_ClassName == "cItems" then
-				if a_FunctionName == "Delete" then
+			if a_ClassName == "cLineBlockTracer" then
+				if a_FunctionName == "FirstSolidHitTrace" then
+					if index == 2 then
+						inputs[index] = 1
+					elseif index == 3 then
+						 inputs[index] = 255
+                                        elseif index == 4 then
+                                                 inputs[index] = 1
+                                                inputs[index] = 1
+                                        elseif index == 5 then
+                                                 inputs[index] = 1
+                                        elseif index == 6 then
+                                                 inputs[index] = 1
+                                        elseif index == 7 then
+                                                 inputs[index] = 1
+					end
+				end
+				
+			elseif a_ClassName == "cItems" then
+				if a_FunctionName == "Delete" or a_FunctionName == "Get" then
 					inputs[index] = 0
 				end
 			elseif a_ClassName == "ItemCategory" then
@@ -200,6 +220,20 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 				elseif index == 3 then
 					inputs[index] = 3
 				end
+			elseif a_ClassName == "cBoundingBox" then
+				if index == 1 then
+					inputs[index] = 110
+				elseif index == 2 then
+					inputs[index] = 188
+				elseif index == 3 then
+					inputs[index] = 5
+				elseif index == 4 then
+					inputs[index] = 176
+				elseif index == 5 then
+					inputs[index] = 76
+				elseif index == 6 then
+					inputs[index] = 160
+				end
 			end
 			if inputs[index] == nil then
 				inputs[index] = 1
@@ -207,7 +241,21 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		elseif param == "boolean" then
 			inputs[index] = "false"
 		elseif param == "cItem" then
-			inputs[index] = "cItem(1, 2)"
+			if a_ClassName == "cRoot" then
+				if a_FunctionName == "GetBrewingRecipe" then
+					if index == 1 then
+						inputs[index] = "cItem(E_ITEM_POTION)"
+					elseif index == 2 then
+						inputs[index] = "cItem(E_ITEM_NETHER_WART)"
+					end
+				elseif a_FunctionName == "GetFurnaceRecipe" then
+					inputs[index] = "cItem(E_ITEM_RAW_FISH)"
+				end
+			end
+
+			if inputs[index] == nil then
+					inputs[index] = "cItem(1, 2)"
+			end
 		elseif param == "function" then
 			inputs[index] = "nil"
 		elseif param == "cPlayer" then
@@ -240,7 +288,41 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		elseif param == "Vector3i" then
 			inputs[index] = "Vector3i(1, 1, 1)"
 		elseif param == "Vector3d" then
-			inputs[index] = "Vector3d(1, 1, 1)"
+			if a_ClassName == "cBoundingBox" then
+				if a_FunctionName == "CalcLineIntersection" then
+					 if #a_Params == 2 then
+						-- not is static
+						if index == 1 then
+							inputs[index] = "Vector3d(192, 139, 114)"
+						elseif index == 2 then
+							inputs[index] = "Vector3d(85, 37, 32)"
+						end
+					elseif #a_Params == 4 then
+						-- is static
+						if index == 1 then
+							inputs[index] = "Vector3d(45, 17, 124)"
+						elseif index == 2 then
+							inputs[index] = "Vector3d(243, 229, 236)"
+						elseif index == 3 then
+							inputs[index] = "Vector3d(8, 83, 155)"
+						elseif index == 4 then
+							inputs[index] = "Vector3d(204, 14, 129)"
+						end
+					end
+				end
+			elseif a_ClassName == "cLineBlockTracer" then
+				if a_FunctionName == "FirstSolidHitTrace" then
+					if index == 2 then
+						inputs[index] = "Vector3d(1, 255, 1)"
+					elseif index == 3 then
+						inputs[index] = "Vector3d(1, 1, 1)"
+					end
+				end
+			end
+
+			if inputs[index] == nil then
+				inputs[index] = "Vector3d(1, 1, 1)"
+			end
 		elseif param == "Vector3f" then
 			inputs[index] = "Vector3f(1, 1, 1)"
 		elseif param == "cProjectileEntity#eKind" then
@@ -248,7 +330,15 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		elseif param == "cEntity" then
 			inputs[index] = "nil"
 		elseif param == "cBoundingBox" then
-			inputs[index] = "cBoundingBox(Vector3d(2, 2, 2), Vector3d(10, 10, 10))"
+			if a_FunctionName == "Intersect" then
+				inputs[index] = "cBoundingBox(163, 190, 19, 91, 137, 244)"
+			elseif a_FunctionName == "CalcLineIntersection" then
+				inputs[index] = "cBoundingBox(78, 230, 107, 254, 74, 153)"
+			end
+
+			if inputs[index] == nil then
+				inputs[index] = "cBoundingBox(Vector3d(2, 1, 2), Vector3d(10, 256, 10))"
+			end
 		elseif param == "cCuboid" then
 			inputs[index] = "cCuboid(10, 10, 10)"
 		elseif param == "eExplosionSource" then
