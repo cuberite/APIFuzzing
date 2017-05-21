@@ -126,6 +126,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared["cDispenserEntity"] = {}
 	g_IgnoreShared["cDropSpenserEntity"] = {}
 	g_IgnoreShared["cEntity"] = {}
+	g_IgnoreShared["cItemGrid"] = {}
 	g_IgnoreShared["cRoot"] = {}
 	g_IgnoreShared["cSplashPotionEntity"] = {}
 	g_IgnoreShared["cWebAdmin"] = {}
@@ -169,8 +170,15 @@ function CreateSharedIgnoreTable()
 	-- cEntityEffect, but cEntityEffect has only static functions
 	g_IgnoreShared["cSplashPotionEntity"]["SetEntityEffect"] = true
 
-	-- Crashes the server, #3662
-	g_IgnoreShared["cEntity"]["HandleSpeedFromAttachee"] = true
+	-- Crashes the server
+	g_IgnoreShared["cEntity"]["HandleSpeedFromAttachee"] = true  -- #3662
+	g_IgnoreShared["cWorld"]["PrepareChunk"] = true  -- #3598
+	g_IgnoreShared["cWorld"]["SendBlockTo"] = true  -- #3600
+
+	--  #3614
+	g_IgnoreShared["cItemGrid"]["GetNextEmptySlot"] = true
+	g_IgnoreShared["cItemGrid"]["GetNextUsedSlot"] = true
+	g_IgnoreShared["cItemGrid"]["AddItem"] = true
 
 
 	-- ## Whole class ignored ##
