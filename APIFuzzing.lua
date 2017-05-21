@@ -199,7 +199,12 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			fncTest = fncTest .. " local monster = tolua.cast(a_Entity, '" .. a_ClassName .. "' )"
 			fncTest = fncTest .. " GatherReturnValues(monster:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) return true end)"
 		elseif a_ClassName == "cWorld" then
-			fncTest = "GatherReturnValues(cRoot:Get():GetDefaultWorld():" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
+			if a_FunctionName == "GetSignLines" then
+				fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_SIGN_POST, 0)"
+				fncTest = fncTest .. "GatherReturnValues(cRoot:Get():GetDefaultWorld():GetSignLines(10, 100, 10))"
+			else
+				fncTest = "GatherReturnValues(cRoot:Get():GetDefaultWorld():" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
+			end
 		elseif a_ClassName == "cRoot" then
 			fncTest = "GatherReturnValues(cRoot:Get():" .. a_FunctionName
 			fncTest = fncTest .."(" .. a_ParamTypes .. "))"
@@ -260,7 +265,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 					fncTest = "local obj = " .. a_ClassName .. "()"
 				end
 				if a_ClassName == "cItems" then
-					if a_FunctionName == "Delete" then
+					if a_FunctionName == "Delete" or a_FunctionName == "Get"  then
 						fncTest = fncTest .. " obj:Add(cItem(1, 1))"
 					end
 				end
@@ -311,9 +316,9 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		LOG("                                             ## Code ##")
 		LOG("\n" .. fncTest)
 		LOG("")
-		LOG("Class = \t\t" .. a_ClassName)
-		LOG("Function = \t\t" .. a_FunctionName)
-		LOG("Params = \t\t" .. a_ParamTypes)
+		LOG("Class =               " .. a_ClassName)
+		LOG("Function =            " .. a_FunctionName)
+		LOG("Params =              " .. a_ParamTypes)
 		LOG("This code caused an error on runtime. For example it could be:")
 		LOG("- the fault of this plugin, if a wrong param has been passed or a syntax error")
 		LOG("- a function that is documented, but not exported or doesn't exists")
@@ -330,8 +335,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	-- NOTE: There can be false positives. For example for function GetSignLines from cWorld.
 	-- If the block is not a sign it will correctly return 1 value instead of the expected 5.
 	-- Currently two ideas:
-	-- 1) Improve the test code. For example for the sign,  place a sign before the call will be made
-	-- 2) If the output is a false positive. Add the function to the table g_FalsePositives in tables.lua
+	-- 1) Improve the test code. For example for the sign, place a sign before the call will be made
+	-- 2) If it's to complex, add the class and function to table g_FalsePositives in tables.lua
 
 	if g_FalsePositives[a_ClassName] ~= nil and g_FalsePositives[a_ClassName][a_FunctionName] == true  then
 		return
@@ -369,10 +374,10 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		LOG("                                             ## Code ##")
 		LOG("\n" .. fncTest)
 		LOG("")
-		LOG("Class = \t\t" .. a_ClassName)
-		LOG("Function = \t\t" .. a_FunctionName)
-		LOG("Got = \t\t\t" .. retGot)
-		LOG("APIDoc = \t\t" .. retAPIDoc)
+		LOG("Class =               " .. a_ClassName)
+		LOG("Function =            " .. a_FunctionName)
+		LOG("Got =                 " .. retGot)
+		LOG("APIDoc =              " .. retAPIDoc)
 		LOG("#########################################################################################################")
 		LOG("")
 	end

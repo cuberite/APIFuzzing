@@ -151,12 +151,6 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 				elseif a_FunctionName == "StringToEnchantmentID" then
 					inputs[index] = "'Infinity'"
 				end
-			elseif a_ClassName == "cWorld" then
-				if a_ClassName == "cLineBlockTracer" then
-					if a_FunctionName == "FirstSolidHitTrace" then
-						inputs[index] = "world"
-					end
-				end
 			elseif a_ClassName == "cRoot" then
 				if a_FunctionName == "GetWorld" then
 					inputs[index] = "'world'"
@@ -172,7 +166,6 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 				-- If an error occurs add special handling above
 				inputs[index] = "'JustAString'"
 			end
-
 		elseif param == "number" then
 			if a_ClassName == "cLineBlockTracer" then
 				if a_FunctionName == "FirstSolidHitTrace" then
@@ -191,7 +184,6 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
                                                  inputs[index] = 1
 					end
 				end
-				
 			elseif a_ClassName == "cItems" then
 				if a_FunctionName == "Delete" or a_FunctionName == "Get" then
 					inputs[index] = 0

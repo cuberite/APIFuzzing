@@ -110,19 +110,8 @@ function CreateTables()
 
 	-- This list contains functions that causes false positives
 	-- TODO: Add better test code for the functions below to correct them
+	-- [Class name][Function name]
 	g_FalsePositives = {}
-	g_FalsePositives["cBoundingBox"] = {}
-	g_FalsePositives["cBoundingBox"]["Intersect"] = true
-
-	g_FalsePositives["cWorld"] = {}
-	g_FalsePositives["cWorld"]["GetSignLines"] = true
-
-	g_FalsePositives["cRoot"] = {}
-	g_FalsePositives["cWorld"]["GetBrewingRecipe"] = true
-	g_FalsePositives["cWorld"]["GetFurnaceRecipe"] = true
-
-	g_FalsePositives["cItems"] = {}
-	g_FalsePositives["cItems"]["Get"] = true
 end
 
 
