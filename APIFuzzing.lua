@@ -223,6 +223,31 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			fncTest = fncTest .. " function(a_BlockEntity) local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
+		if g_BlockEntityToFunctionCall[a_ClassName] then
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, " .. g_BlockEntityToBlockType[a_ClassName] .. ", 0)"
+			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():" .. g_BlockEntityToFunctionCall[a_ClassName] .. "("
+			fncTest = fncTest .. "10, 100, 10, function(a_BlockEntity) "
+			fncTest = fncTest .. " GatherReturnValues(a_BlockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
+		end
+		if g_ReqInstance[a_ClassName] then
+			if a_API[a_ClassName]["Functions"]["constructor"] ~= nil then
+				local constParams = GetParamTypes(a_API[a_ClassName]["Functions"]["constructor"])
+				if constParams ~= nil and #constParams ~= 0 then
+					local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
+					fncTest = "local obj = " .. a_ClassName .. "(" .. table.concat(constInputs[1], ", ") .. ")"
+				else
+					fncTest = "local obj = " .. a_ClassName .. "()"
+				end
+			else
+				fncTest = "local obj = " .. a_ClassName .. "()"
+			end
+			if a_ClassName == "cItems" then
+				if a_FunctionName == "Delete" or a_FunctionName == "Get"  then
+					fncTest = fncTest .. " obj:Add(cItem(1, 1))"
+				end
+			end
+			fncTest = fncTest .. " GatherReturnValues(obj:" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
+		end
 	end
 
 	if a_ClassName == "Globals" then
@@ -241,34 +266,6 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 				fncTest = "GatherReturnValues(" .. a_ClassName .. ":" .. a_FunctionName
 			end
 			fncTest = fncTest .."(" .. a_ParamTypes .. "))"
-		end
-	end
-	if g_BlockEntityToFunctionCall[a_ClassName] then
-               if not a_IsStatic then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, " .. g_BlockEntityToBlockType[a_ClassName] .. ", 0)"
-			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():" .. g_BlockEntityToFunctionCall[a_ClassName] .. "("
-			fncTest = fncTest .. "10, 100, 10, function(a_BlockEntity) GatherReturnValues(a_BlockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		end
-	end
-	if g_ReqInstance[a_ClassName] then
-		if not a_IsStatic then
-			if a_API[a_ClassName]["Functions"]["constructor"] ~= nil then
-				local constParams = GetParamTypes(a_API[a_ClassName]["Functions"]["constructor"])
-				if constParams ~= nil and #constParams ~= 0 then
-					local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
-					fncTest = "local obj = " .. a_ClassName .. "(" .. table.concat(constInputs[1], ", ") .. ")"
-				else
-					fncTest = "local obj = " .. a_ClassName .. "()"
-				end
-			else
-				fncTest = "local obj = " .. a_ClassName .. "()"
-			end
-			if a_ClassName == "cItems" then
-				if a_FunctionName == "Delete" or a_FunctionName == "Get"  then
-					fncTest = fncTest .. " obj:Add(cItem(1, 1))"
-				end
-			end
-			fncTest = fncTest .. " GatherReturnValues(obj:" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
 		end
 	end
 
