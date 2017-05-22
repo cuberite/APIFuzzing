@@ -121,13 +121,13 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	end
 	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
 
-       for i = 1, 10 do
-               tmp = {}
-               for i = 1, #a_Params do
-                       tmp[i] = math.random(-100000000000, 10000000000)
-               end
-               table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-       end
+	for _ = 1, 10 do
+		tmp = {}
+		for i = 1, #a_Params do
+				tmp[i] = math.random(-100000000000, 10000000000)
+		end
+		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
+	end
 
 	tmp = {}
 	for i = 1, #a_Params do
@@ -173,15 +173,15 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 						inputs[index] = 1
 					elseif index == 3 then
 						 inputs[index] = 255
-                                        elseif index == 4 then
-                                                 inputs[index] = 1
-                                                inputs[index] = 1
-                                        elseif index == 5 then
-                                                 inputs[index] = 1
-                                        elseif index == 6 then
-                                                 inputs[index] = 1
-                                        elseif index == 7 then
-                                                 inputs[index] = 1
+					elseif index == 4 then
+							inputs[index] = 1
+							inputs[index] = 1
+					elseif index == 5 then
+							inputs[index] = 1
+					elseif index == 6 then
+							inputs[index] = 1
+					elseif index == 7 then
+							inputs[index] = 1
 					end
 				end
 			elseif a_ClassName == "cItems" then
@@ -397,6 +397,7 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "dimOverworld"
 		end
 
+		CreateStopFile()
 		assert(inputs[index] ~= nil, "Param not handled: " .. param)
 	end
 

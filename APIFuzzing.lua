@@ -65,7 +65,7 @@ function CmdFuzzing(a_Split)
 
 	-- If reached here, we haven't got an crash.
 	-- Tell the run script, that fuzzing is completed
-	io.open("stop.txt", "w")
+	CreateStopFile()
 
 	-- Stop server
 	-- cRoot:Get():QueueExecuteConsoleCommand("stop")
@@ -282,6 +282,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		LOG("")
 		LOG("This indicates a problem in the generation of the code in this plugin. Plugin will be stopped.")
 		LOG("#########################################################################################################")
+		CreateStopFile()
 		assert(false, "Runtime of plugin stopped, because of syntax error.")
 	end
 

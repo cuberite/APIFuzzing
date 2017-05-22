@@ -90,11 +90,11 @@ end
 
 
 function SaveCurrentTest(a_ClassName, a_FunctionName, a_FunctionAndParams)
-	local f = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "current.txt", "w")
-	f:write(a_ClassName, "\n")
-	f:write(a_FunctionName, "\n")
-	f:write(a_FunctionAndParams, "\n")
-	f:close()
+	local fileCurrent = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "current.txt", "w")
+	fileCurrent:write(a_ClassName, "\n")
+	fileCurrent:write(a_FunctionName, "\n")
+	fileCurrent:write(a_FunctionAndParams, "\n")
+	fileCurrent:close()
 end
 
 
@@ -108,7 +108,7 @@ function LoadTableIgnore()
 
 	local fncIgnore = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")
 	if (fncIgnore == nil) then
-		io.open("stop.txt", "w")
+		CreateStopFile()
 		assert(false,  "The file ignore_table.txt could not be loaded.")
 	end
 	g_Ignore = fncIgnore()
@@ -149,7 +149,7 @@ function LoadTableCrashed()
 
 	local fncCrashed = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")
 	if (fncCrashed == nil) then
-		io.open("stop.txt", "w")
+		CreateStopFile()
 		assert(false,  "The file crashed_table.txt could not be loaded.")
 	end
 	g_Crashed = fncCrashed()
@@ -244,4 +244,11 @@ function GetReturnTypes(a_FncInfo, a_ClassName, a_FunctionName)
 	end
 
 	return nil
+end
+
+
+
+function CreateStopFile()
+	local fileStop = io.open("stop.txt", "w")
+	fileStop:close()
 end
