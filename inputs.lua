@@ -395,6 +395,8 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "nil"
 		elseif param == "eDimension" then
 			inputs[index] = "dimOverworld"
+		elseif param == "cBoat#eMaterial" then
+			inputs[index] = "cBoat.bmOak"
 		end
 
 		CreateStopFile()

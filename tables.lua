@@ -18,6 +18,7 @@ function CreateTables()
 	g_ClassStaticFunctions = {}
 	g_ClassStaticFunctions["cBeaconEntity"] = true
 	g_ClassStaticFunctions["cBlockInfo"] = true
+	g_ClassStaticFunctions["cBoat"] = true
 	g_ClassStaticFunctions["cBoundingBox"] = true
 	g_ClassStaticFunctions["cCryptoHash"] = true
 	g_ClassStaticFunctions["cDispenserEntity"] = true
@@ -90,6 +91,7 @@ function CreateTables()
 	g_ObjectToTypeName["Vector3i"] = "userdata"
 
 	-- enums
+	g_ObjectToTypeName["cBoat#eMaterial"] = "number"
 	g_ObjectToTypeName["cEntity#eEntityType"] = "number"
 	g_ObjectToTypeName["cEntityEffect#eType"] = "number"
 	g_ObjectToTypeName["cMonster#eFamily"] = "number"
@@ -193,11 +195,6 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared["cCraftingGrid"] = "*"
 	g_IgnoreShared["cRankManager"] = "*"
 	g_IgnoreShared["cStringCompression"] = "*"
-
-	-- Requires the spawned entity
-	g_IgnoreShared["cPickup"] = "*"
-	g_IgnoreShared["cExpOrb"] = "*"
-	g_IgnoreShared["cFallingBlock"] = "*"
 
 	-- Database
 	g_IgnoreShared["sqlite3"] = "*"

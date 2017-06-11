@@ -248,6 +248,42 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			end
 			fncTest = fncTest .. " GatherReturnValues(obj:" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
 		end
+		if a_ClassName == "cExpOrb" then
+			fncTest =
+[[local world = cRoot:Get():GetDefaultWorld()
+local entityID = world:SpawnExperienceOrb(1, 255, 1, 1000)
+world:DoWithEntityByID(entityID, function(a_Entity)
+local exp_orb = tolua.cast(a_Entity, "cExpOrb")
+GatherReturnValues(exp_orb:]]
+			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
+		end
+		if a_ClassName == "cFallingBlock" then
+			fncTest =
+[[local world = cRoot:Get():GetDefaultWorld()
+local entityID = world:SpawnFallingBlock(1, 255, 1, 12, 1)
+world:DoWithEntityByID(entityID, function(a_Entity)
+local obj = tolua.cast(a_Entity, "cFallingBlock") GatherReturnValues(obj:]]
+			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
+		end
+		if a_ClassName == "cPickup" then
+			fncTest =
+[[local world = cRoot:Get():GetDefaultWorld()
+local items = cItems() items:Add(cItem(1, 64))
+world:SpawnItemPickups(items, 1, 200, 1, 0)
+world:ForEachEntity(function(a_Entity)
+if not(a_Entity:IsPickup()) then return end
+local obj = tolua.cast(a_Entity, "cPickup") GatherReturnValues(obj:]]
+			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
+		end
+		if a_ClassName == "cBoat" then
+			fncTest =
+[[local world = cRoot:Get():GetDefaultWorld()
+local entityID = world:SpawnBoat(1, 200, 1, cBoat.bmOak)
+world:DoWithEntityByID(entityID, function(a_Entity)
+if not(a_Entity:IsBoat()) then return end
+local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
+			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
+		end
 	end
 
 	if a_ClassName == "Globals" then
