@@ -174,6 +174,9 @@ function CreateSharedIgnoreTable()
 
 	-- Crashes the server
 	g_IgnoreShared["cEntity"]["HandleSpeedFromAttachee"] = true  -- #3662
+	g_IgnoreShared["cEntity"]["Destroy"] = true
+	g_IgnoreShared["cEntity"]["IsA"] = true
+	g_IgnoreShared["cEntity"]["Killed"] = true
 	g_IgnoreShared["cWorld"]["PrepareChunk"] = true  -- #3598
 	g_IgnoreShared["cWorld"]["SendBlockTo"] = true  -- #3600
 

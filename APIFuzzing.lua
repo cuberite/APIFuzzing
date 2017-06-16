@@ -19,6 +19,8 @@ function Initialize(a_Plugin)
 	-- Was there a crash last time?
 	CheckIfCrashed()
 
+	cPluginManager:AddHook(cPluginManager.HOOK_SPAWNED_ENTITY, MyOnSpawnedEntity)
+
 	cPluginManager.BindConsoleCommand("fuzzing", CmdFuzzing, " - fuzzing the api")
 	cPluginManager.BindConsoleCommand("checkapi", CmdCheckAPI, " - check the api")
 	return true
@@ -60,7 +62,6 @@ function CmdFuzzing(a_Split)
 	end
 	RunFuzzing(loadfile(pathAPIDesc)().Classes)
 
-
 	LOG("Fuzzing completed!")
 
 	-- If reached here, we haven't got an crash.
@@ -74,15 +75,100 @@ end
 
 
 
+function MyOnSpawnedEntity(World, Entity)
+	LOG("Entity spawned")
+	g_Object = Entity
+	FuzzObject("cEntity")
+end
+
+
+
+function FuzzObject(a_ClassName)
+	local pathAPIDesc = table.concat({ "Plugins", "APIDump", "APIDesc.lua" }, cFile:GetPathSeparator())
+	local class = loadfile(pathAPIDesc)().Classes[a_ClassName]
+
+	if g_Crashed[a_ClassName] == nil then
+		g_Crashed[a_ClassName] = {}
+	end
+
+	if g_IgnoreShared[a_ClassName] == nil then
+		g_IgnoreShared[a_ClassName] = {}
+	end
+
+	for functionName, tbFncInfo in pairs(class.Functions or {}) do
+		local inputs
+		local params = GetParamTypes(tbFncInfo, functionName)
+		if params ~= nil then
+			inputs = CreateInputs(a_ClassName, functionName, params, true)
+		end
+
+		if
+			g_IgnoreShared[a_ClassName] ~= "*" and
+			g_IgnoreShared[a_ClassName][functionName] == nil and
+			-- g_Ignore[a_ClassName] ~= "*" and
+			-- g_Ignore[a_ClassName][functionName] == nil and
+			g_Crashed[a_ClassName][functionName] == nil and
+			functionName ~= "constructor" and
+			functionName ~= "operator_div" and
+			functionName ~= "operator_eq" and
+			functionName ~= "operator_mul" and
+			functionName ~= "operator_plus" and
+			functionName ~= "operator_sub" and
+			inputs ~= nil
+		then
+			for index, input in ipairs(inputs) do
+				local isStatic = input.IsStatic or false
+				if not isStatic then
+					local paramTypes = table.concat(input, ", ")
+					local fncTest =
+[[
+return
+	function()
+		g_Object:%s(%s)
+	end
+]]
+					fncTest = string.format(fncTest, functionName, paramTypes)
+
+					-- Load function, check for syntax problems
+					local fnc, errSyntax = loadstring(fncTest)()
+					if fnc == nil then
+						LOG("######################################### SYNTAX ERROR DETECTED #########################################")
+						LOG(errSyntax)
+						LOG("")
+						LOG("                                             ## Code ##")
+						LOG("\n" .. fncTest)
+						LOG("")
+						LOG("This indicates a problem in the generation of the code in this plugin. Plugin will be stopped.")
+						LOG("#########################################################################################################")
+						CreateStopFile()
+						assert(false, "Runtime of plugin stopped, because of syntax error.")
+					end
+
+					-- Save class name, function and params, in case of a crash
+					SaveCurrentTest(a_ClassName, functionName, fncTest)
+
+					-- Add to table ignore
+					-- g_Ignore[a_ClassName][functionName] = true
+					-- SaveTableIgnore()
+
+					pcall(fnc)
+				end
+			end
+		end
+	end
+end
+
+
+
 function RunFuzzing(a_API)
 	for className, tbFunctions in pairs(a_API) do
 		-- Create table for functions
 		if g_Ignore[className] == nil then
-		 	g_Ignore[className] = {}
+			g_Ignore[className] = {}
 		end
 
 		if g_IgnoreShared[className] == nil then
-		 	g_IgnoreShared[className] = {}
+			g_IgnoreShared[className] = {}
 		end
 
 		if g_Crashed[className] == nil then
@@ -191,29 +277,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	local fncTest = ""
 
 	if not(a_IsStatic) then
-		if a_ClassName == "cEntity" then
-			fncTest = "cRoot:Get():GetDefaultWorld():ForEachEntity(function(a_Entity)"
-			fncTest = fncTest .. " GatherReturnValues(a_Entity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) return true end)"
-		elseif a_ClassName == "cMonster" then
-			fncTest = "cRoot:Get():GetDefaultWorld():ForEachEntity(function(a_Entity) if not(a_Entity:IsMob()) then return end"
-			fncTest = fncTest .. " local monster = tolua.cast(a_Entity, '" .. a_ClassName .. "' )"
-			fncTest = fncTest .. " GatherReturnValues(monster:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) return true end)"
-		elseif a_ClassName == "cWorld" then
-			if a_FunctionName == "GetSignLines" then
-				fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_SIGN_POST, 0)"
-				fncTest = fncTest .. "GatherReturnValues(cRoot:Get():GetDefaultWorld():GetSignLines(10, 100, 10))"
-			else
-				fncTest = "GatherReturnValues(cRoot:Get():GetDefaultWorld():" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
-			end
-		elseif a_ClassName == "cRoot" then
-			fncTest = "GatherReturnValues(cRoot:Get():" .. a_FunctionName
-			fncTest = fncTest .."(" .. a_ParamTypes .. "))"
-		elseif a_ClassName == "cWebAdmin" then
-			fncTest = "GatherReturnValues(cRoot:Get():GetWebAdmin():" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
-		elseif a_ClassName == "cItemGrid" then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)"
-			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,"
-			fncTest = fncTest .. " function(a_ChestEntity) GatherReturnValues(a_ChestEntity:GetContents():" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
+		if g_Generation[a_ClassName] ~= nil then
+			fncTest = g_Generation[a_ClassName](a_FunctionName, a_ParamTypes)
 		elseif a_ClassName == "cServer" then
 			fncTest = "GatherReturnValues(cRoot:Get():GetServer():" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
 		elseif a_ClassName == "cJukeboxEntity" or a_ClassName == "cMobSpawnerEntity" then
