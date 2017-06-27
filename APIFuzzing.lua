@@ -223,13 +223,13 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			fncTest = fncTest .. " function(a_BlockEntity) local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
-		if g_BlockEntityToFunctionCall[a_ClassName] then
+		if g_BlockEntityToFunctionCall[a_ClassName] and fncTest == "" then
 			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, " .. g_BlockEntityToBlockType[a_ClassName] .. ", 0)"
 			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():" .. g_BlockEntityToFunctionCall[a_ClassName] .. "("
 			fncTest = fncTest .. "10, 100, 10, function(a_BlockEntity) "
 			fncTest = fncTest .. " GatherReturnValues(a_BlockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
-		if g_ReqInstance[a_ClassName] then
+		if g_ReqInstance[a_ClassName] and fncTest == "" then
 			if a_API[a_ClassName]["Functions"]["constructor"] ~= nil then
 				local constParams = GetParamTypes(a_API[a_ClassName]["Functions"]["constructor"])
 				if constParams ~= nil and #constParams ~= 0 then
@@ -290,7 +290,7 @@ local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
 		fncTest = "GatherReturnValues(" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
 	end
 
-	if g_ClassStaticFunctions[a_ClassName] then
+	if g_ClassStaticFunctions[a_ClassName] and fncTest == "" then
 		if a_IsStatic then
 			if
 				a_ClassName == "cStringCompression" or

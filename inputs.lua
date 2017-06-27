@@ -399,8 +399,10 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "cBoat.bmOak"
 		end
 
-		CreateStopFile()
-		assert(inputs[index] ~= nil, "Param not handled: " .. param)
+		if inputs[index] == nil then
+			CreateStopFile()
+			assert(false, "Param not handled: " .. param)
+		end
 	end
 
 	return inputs
