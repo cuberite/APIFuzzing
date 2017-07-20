@@ -242,7 +242,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 				fncTest = "local obj = " .. a_ClassName .. "()"
 			end
 			if a_ClassName == "cItems" then
-				if a_FunctionName == "Delete" or a_FunctionName == "Get"  then
+				if a_FunctionName == "Delete" or a_FunctionName == "Get" or a_FunctionName == "Set"  then
 					fncTest = fncTest .. " obj:Add(cItem(1, 1))"
 				end
 			end

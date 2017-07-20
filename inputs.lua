@@ -185,7 +185,7 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 					end
 				end
 			elseif a_ClassName == "cItems" then
-				if a_FunctionName == "Delete" or a_FunctionName == "Get" then
+				if a_FunctionName == "Delete" or a_FunctionName == "Get" or a_FunctionName == "Set" then
 					inputs[index] = 0
 				end
 			elseif a_ClassName == "ItemCategory" then
@@ -242,6 +242,10 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 					end
 				elseif a_FunctionName == "GetFurnaceRecipe" then
 					inputs[index] = "cItem(E_ITEM_RAW_FISH)"
+				end
+			elseif a_ClassName == "cBoat" then
+				if a_FunctionName == "ItemToMaterial" then
+					inputs[index] = "cItem(E_ITEM_ACACIA_BOAT)"
 				end
 			end
 

@@ -2,6 +2,7 @@ function CreateTables()
 	-- Classes requires a instance
 	g_ReqInstance = {}
 	g_ReqInstance["cBoundingBox"] = true
+	g_ReqInstance["cColor"] = true
 	g_ReqInstance["cCompositeChat"] = true
 	g_ReqInstance["cCraftingGrid"] = true
 	g_ReqInstance["cCuboid"] = true
@@ -69,6 +70,9 @@ function CreateTables()
 	g_BlockEntityToFunctionCall["cDropSpenserEntity"] = "DoWithDropperAt"
 	g_BlockEntityToBlockType["cDropSpenserEntity"] = E_BLOCK_DROPPER
 
+	g_BlockEntityToFunctionCall["cBedEntity"] = "DoWithBedAt"
+	g_BlockEntityToBlockType["cBedEntity"] = E_BLOCK_BED
+
 
 	g_ObjectToTypeName = {}
 
@@ -123,12 +127,10 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared = {}
 
 	-- ## Initialize tables ##
-	g_IgnoreShared["cBlockInfo"] = {}
 	g_IgnoreShared["cCompositeChat"] = {}
 	g_IgnoreShared["cDispenserEntity"] = {}
 	g_IgnoreShared["cDropSpenserEntity"] = {}
 	g_IgnoreShared["cEntity"] = {}
-	g_IgnoreShared["cItemGrid"] = {}
 	g_IgnoreShared["cRoot"] = {}
 	g_IgnoreShared["cSplashPotionEntity"] = {}
 	g_IgnoreShared["cWebAdmin"] = {}
@@ -174,13 +176,7 @@ function CreateSharedIgnoreTable()
 
 	-- Crashes the server
 	g_IgnoreShared["cEntity"]["HandleSpeedFromAttachee"] = true  -- #3662
-	g_IgnoreShared["cWorld"]["PrepareChunk"] = true  -- #3598
 	g_IgnoreShared["cWorld"]["SendBlockTo"] = true  -- #3600
-
-	--  #3614
-	g_IgnoreShared["cItemGrid"]["GetNextEmptySlot"] = true
-	g_IgnoreShared["cItemGrid"]["GetNextUsedSlot"] = true
-	g_IgnoreShared["cItemGrid"]["AddItem"] = true
 
 
 	-- ## Whole class ignored ##
