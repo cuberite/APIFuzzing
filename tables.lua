@@ -176,7 +176,6 @@ function CreateSharedIgnoreTable()
 
 	-- Crashes the server
 	g_IgnoreShared["cEntity"]["HandleSpeedFromAttachee"] = true  -- #3662
-	g_IgnoreShared["cWorld"]["SendBlockTo"] = true  -- #3600
 
 
 	-- ## Whole class ignored ##
