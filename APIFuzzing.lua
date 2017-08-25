@@ -305,7 +305,11 @@ local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
 		end
 	end
 
-	assert(fncTest ~= "", "Not handled: " .. a_ClassName .. "\t" .. a_FunctionName)
+	if fncTest == "" then
+		LOG(string.format("Not handled: %s, %s", a_ClassName, a_FunctionName))
+		CreateStopFile()
+		assert(false)
+	end
 
 	-- Load function, check for syntax problems
 	local fnc, errSyntax = loadstring(fncTest)
