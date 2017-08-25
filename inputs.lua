@@ -38,7 +38,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 					then
 						return nil
 					end
-					print(a_ClassName, a_FunctionName)
+					LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
 					assert(false, "The param " .. a_Params[i][index] .. " has value nil.")
 				end
 			end
@@ -144,7 +144,9 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 	local inputs = {}
 
 	for index, param in ipairs(a_Params) do
-		if param == "string" then
+		if param == "cUUID" then
+			inputs[index] = "cUUID()"
+		elseif param == "string" then
 			if a_ClassName == "cEnchantments" then
 				if a_FunctionName == "AddFromString" then
 					inputs[index] = "'Looting = 1'"

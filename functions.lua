@@ -15,7 +15,7 @@ function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 					end
 				end
 				if g_ObjectToTypeName[rType] == nil then
-					LOG(a_ClassName, a_FunctionName)
+					LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
 					assert(false, "ObjectToTypeName: Not handled " .. rType)
 				end
 			end

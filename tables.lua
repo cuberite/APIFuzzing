@@ -13,6 +13,7 @@ function CreateTables()
 	g_ReqInstance["Vector3d"] = true
 	g_ReqInstance["Vector3f"] = true
 	g_ReqInstance["Vector3i"] = true
+	g_ReqInstance["cUUID"] = true
 
 
 	-- Classes that contains static functions
@@ -35,6 +36,7 @@ function CreateTables()
 	g_ClassStaticFunctions["cRoot"] = true
 	g_ClassStaticFunctions["cStringCompression"] = true
 	g_ClassStaticFunctions["cUrlParser"] = true
+	g_ClassStaticFunctions["cUUID"] = true
 	g_ClassStaticFunctions["cWebAdmin"] = true
 	g_ClassStaticFunctions["ItemCategory"] = true
 
@@ -81,6 +83,7 @@ function CreateTables()
 	g_ObjectToTypeName["cBoundingBox"] = "userdata"
 	g_ObjectToTypeName["cCompositeChat"] = "userdata"
 	g_ObjectToTypeName["cCraftingRecipe"] = "userdata"
+	g_ObjectToTypeName["cEntity"] = "userdata"
 	g_ObjectToTypeName["cItem"] = "userdata"
 	g_ObjectToTypeName["cItemGrid"] = "userdata"
 	g_ObjectToTypeName["cMapManager"] = "userdata"
@@ -88,6 +91,7 @@ function CreateTables()
 	g_ObjectToTypeName["cRoot"] = "userdata"
 	g_ObjectToTypeName["cScoreboard"] = "userdata"
 	g_ObjectToTypeName["cServer"] = "userdata"
+	g_ObjectToTypeName["cUUID"] = "userdata"
 	g_ObjectToTypeName["cWebAdmin"] = "userdata"
 	g_ObjectToTypeName["cWorld"] = "userdata"
 	g_ObjectToTypeName["Vector3d"] = "userdata"
@@ -127,10 +131,12 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared = {}
 
 	-- ## Initialize tables ##
+	g_IgnoreShared["cBlockInfo"] = {}
 	g_IgnoreShared["cCompositeChat"] = {}
 	g_IgnoreShared["cDispenserEntity"] = {}
 	g_IgnoreShared["cDropSpenserEntity"] = {}
 	g_IgnoreShared["cEntity"] = {}
+	g_IgnoreShared["cMonster"] = {}
 	g_IgnoreShared["cRoot"] = {}
 	g_IgnoreShared["cSplashPotionEntity"] = {}
 	g_IgnoreShared["cWebAdmin"] = {}
@@ -145,7 +151,10 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared["cDispenserEntity"]["SpawnProjectileFromDispenser"] = true
 
 	-- Deprecated
+	g_IgnoreShared["cBlockInfo"]["GetPlaceSound"] = true
 	g_IgnoreShared["cWebAdmin"]["GetURLEncodedString"] = true
+	g_IgnoreShared["cWorld"]["WakeUpSimulators"] = true
+	g_IgnoreShared["cWorld"]["WakeUpSimulatorsInArea"] = true
 	g_IgnoreShared["Globals"]["LOGWARN"] = true
 	g_IgnoreShared["Globals"]["md5"] = true
 	g_IgnoreShared["Globals"]["StringToMobType"] = true
@@ -176,6 +185,9 @@ function CreateSharedIgnoreTable()
 
 	-- Crashes the server
 	g_IgnoreShared["cEntity"]["HandleSpeedFromAttachee"] = true  -- #3662
+
+	-- Needs an monster as param
+	g_IgnoreShared["cMonster"]["GetLeashedTo"] = true
 
 
 	-- ## Whole class ignored ##
