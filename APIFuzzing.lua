@@ -222,23 +222,23 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			fncTest = fncTest .. " function(a_BlockEntity) local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
-		if g_ReqInstance[a_ClassName] and fncTest == "" then
-			if a_API[a_ClassName].Functions.constructor ~= nil then
-				local constParams = GetParamTypes(a_API[a_ClassName].Functions.constructor)
-				if constParams ~= nil and #constParams ~= 0 then
-					local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
-					fncTest = "local obj = " .. a_ClassName .. "(" .. table.concat(constInputs[1], ", ") .. ")"
-				else
-					fncTest = "local obj = " .. a_ClassName .. "()"
-				end
+
+		if a_API[a_ClassName].Functions.constructor ~= nil then
+			local constParams = GetParamTypes(a_API[a_ClassName].Functions.constructor)
+			if constParams ~= nil and #constParams ~= 0 then
+				local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
+				fncTest = "local obj = " .. a_ClassName .. "(" .. table.concat(constInputs[1], ", ") .. ")"
 			else
 				fncTest = "local obj = " .. a_ClassName .. "()"
 			end
+
 			if a_ClassName == "cItems" then
 				if a_FunctionName == "Delete" or a_FunctionName == "Get" or a_FunctionName == "Set"  then
 					fncTest = fncTest .. " obj:Add(cItem(1, 1))"
 				end
 			end
+
+			-- Add function and params to call
 			fncTest = fncTest .. " GatherReturnValues(obj:" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
 		end
 		if a_ClassName == "cExpOrb" then

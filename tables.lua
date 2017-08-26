@@ -1,20 +1,4 @@
 function CreateTables()
-	-- Classes requires a instance
-	g_ReqInstance = {}
-	g_ReqInstance.cBoundingBox = true
-	g_ReqInstance.cColor = true
-	g_ReqInstance.cCompositeChat = true
-	g_ReqInstance.cCraftingGrid = true
-	g_ReqInstance.cCuboid = true
-	g_ReqInstance.cEnchantments = true
-	g_ReqInstance.cItem = true
-	g_ReqInstance.cItems = true
-	g_ReqInstance.cLuaWindow = true
-	g_ReqInstance.Vector3d = true
-	g_ReqInstance.Vector3f = true
-	g_ReqInstance.Vector3i = true
-	g_ReqInstance.cUUID = true
-
 	-- Blockentities to BlockType
 	g_BlockEntityToBlockType = {}
 	g_BlockEntityToBlockType.cBeaconEntity = E_BLOCK_BEACON
