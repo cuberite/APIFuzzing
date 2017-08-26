@@ -349,11 +349,11 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "cEnchantments()"
 		elseif param == "cMonster#eFamily" then
 			inputs[index] = "cMonster.mfPassive"
-		elseif param == "Globals#eMonsterType" then
+		elseif param == "eMonsterType" then
 			inputs[index] = "mtBat"
 		elseif param == "cEntityEffect#eType" then
 			inputs[index] = "cEntityEffect.effInvisibility"
-		elseif param == "Globals#eShrapnelLevel" then
+		elseif param == "eShrapnelLevel" then
 			inputs[index] = "slGravityAffectedOnly"
 		elseif param == "cBlockArea" then
 			inputs[index] = "nil"
@@ -383,15 +383,13 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "cWindow.wtChest"
 		elseif param == "cArrowEntity#ePickupState" then
 			inputs[index] = "psNoPickup"
-		elseif param == "eMonsterType" then
-			inputs[index] = "mtBat"
 		elseif param == "cWindow" then
 			inputs[index] = "nil"
 		elseif param == "eSkinPart" then
 			inputs[index] = "spCape"
 		elseif param == "cTeam" then
 			inputs[index] = "nil"
-		elseif param == "Globals#eGameMode" then
+		elseif param == "eGameMode" then
 			inputs[index] = "eGameMode_Adventure"
 		elseif param == "eMainHand" then
 			inputs[index] = "mhLeft"

@@ -216,22 +216,15 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			fncTest = fncTest .. " function(a_ChestEntity) GatherReturnValues(a_ChestEntity:GetContents():" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		elseif a_ClassName == "cServer" then
 			fncTest = "GatherReturnValues(cRoot:Get():GetServer():" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
-		elseif a_ClassName == "cJukeboxEntity" or a_ClassName == "cMobSpawnerEntity" then
-			-- Has no cWorld:DoWith... function. Use DoWithBlockEntityAt and cast it
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_JUKEBOX, 0)"
+		elseif g_BlockEntityToBlockType[a_ClassName] ~= nil then
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
 			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithBlockEntityAt(10, 100, 10,"
 			fncTest = fncTest .. " function(a_BlockEntity) local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
-		if g_BlockEntityToFunctionCall[a_ClassName] and fncTest == "" then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, " .. g_BlockEntityToBlockType[a_ClassName] .. ", 0)"
-			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():" .. g_BlockEntityToFunctionCall[a_ClassName] .. "("
-			fncTest = fncTest .. "10, 100, 10, function(a_BlockEntity) "
-			fncTest = fncTest .. " GatherReturnValues(a_BlockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		end
 		if g_ReqInstance[a_ClassName] and fncTest == "" then
-			if a_API[a_ClassName]["Functions"]["constructor"] ~= nil then
-				local constParams = GetParamTypes(a_API[a_ClassName]["Functions"]["constructor"])
+			if a_API[a_ClassName].Functions.constructor ~= nil then
+				local constParams = GetParamTypes(a_API[a_ClassName].Functions.constructor)
 				if constParams ~= nil and #constParams ~= 0 then
 					local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
 					fncTest = "local obj = " .. a_ClassName .. "(" .. table.concat(constInputs[1], ", ") .. ")"
@@ -290,19 +283,17 @@ local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
 		fncTest = "GatherReturnValues(" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
 	end
 
-	if g_ClassStaticFunctions[a_ClassName] and fncTest == "" then
-		if a_IsStatic then
-			if
-				a_ClassName == "cStringCompression" or
-				a_ClassName == "ItemCategory" or
-				a_ClassName == "cCryptoHash"
-			then
-				fncTest = "GatherReturnValues(" .. a_ClassName .. "." .. a_FunctionName
-			else
-				fncTest = "GatherReturnValues(" .. a_ClassName .. ":" .. a_FunctionName
-			end
-			fncTest = fncTest .."(" .. a_ParamTypes .. "))"
+	if a_IsStatic then
+		if
+			a_ClassName == "cStringCompression" or
+			a_ClassName == "ItemCategory" or
+			a_ClassName == "cCryptoHash"
+		then
+			fncTest = "GatherReturnValues(" .. a_ClassName .. "." .. a_FunctionName
+		else
+			fncTest = "GatherReturnValues(" .. a_ClassName .. ":" .. a_FunctionName
 		end
+		fncTest = fncTest .."(" .. a_ParamTypes .. "))"
 	end
 
 	if fncTest == "" then
@@ -361,9 +352,8 @@ local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
 		LOG("- a missing IsStatic flag in the APIDoc")
 		LOG("#########################################################################################################")
 		LOG("")
-	end
 
-	if not(status) then
+		-- Error occurred, bail out
 		return
 	end
 
