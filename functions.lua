@@ -2,26 +2,34 @@ function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 	local ret = {}
 	for index, rType in ipairs(a_ReturnTypes) do
 		if
-			rType ~= "boolean" and
-			rType ~= "number" and
-			rType ~= "string" and
-			rType ~= "table"
+			rType == "boolean" or
+			rType == "number" or
+			rType == "string" or
+			rType == "table"
 		then
-			if g_ObjectToTypeName[rType] == nil then
-				-- Special cases
-				if a_ClassName == "cCompositeChat" then
-					if rType == "self" then
-						rType = "cCompositeChat"
-					end
-				end
-				if g_ObjectToTypeName[rType] == nil then
-					LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
-					assert(false, "ObjectToTypeName: Not handled " .. rType)
-				end
-			end
-			ret[index] = g_ObjectToTypeName[rType]
-		else
 			ret[index] = rType
+		elseif
+			a_ClassName == "cCompositeChat" and
+			rType == "self"
+		then
+			ret[index] = "userdata"
+		elseif
+			string.find(rType, "#") ~= nil or
+			string.find(string.lower(rType), "^e") ~= nil
+		then
+			-- Enums
+			ret[index] = "number"
+		elseif
+			-- Classes
+			string.find(rType, "^c") ~= nil or
+			string.find(rType, "^Vec") ~= nil
+		then
+			ret[index] = "userdata"
+		end
+
+		if ret[index] == nil then
+			CreateStopFile()
+			assert(false, string.format("ObjectToTypeName(%s, %s): %s not handled", a_ClassName, a_FunctionName, rType))
 		end
 	end
 	return ret

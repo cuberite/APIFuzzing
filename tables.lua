@@ -15,47 +15,7 @@ function CreateTables()
 	g_BlockEntityToBlockType.cNoteEntity = E_BLOCK_NOTE_BLOCK
 
 
-	g_ObjectToTypeName = {}
-
-	-- userdata
-	g_ObjectToTypeName.cBlockInfo = "userdata"
-	g_ObjectToTypeName.cBoundingBox = "userdata"
-	g_ObjectToTypeName.cCompositeChat = "userdata"
-	g_ObjectToTypeName.cCraftingRecipe = "userdata"
-	g_ObjectToTypeName.cEntity = "userdata"
-	g_ObjectToTypeName.cItem = "userdata"
-	g_ObjectToTypeName.cItemGrid = "userdata"
-	g_ObjectToTypeName.cMapManager = "userdata"
-	g_ObjectToTypeName.cPluginManager = "userdata"
-	g_ObjectToTypeName.cRoot = "userdata"
-	g_ObjectToTypeName.cScoreboard = "userdata"
-	g_ObjectToTypeName.cServer = "userdata"
-	g_ObjectToTypeName.cUUID = "userdata"
-	g_ObjectToTypeName.cWebAdmin = "userdata"
-	g_ObjectToTypeName.cWorld = "userdata"
-	g_ObjectToTypeName.Vector3d = "userdata"
-	g_ObjectToTypeName.Vector3f = "userdata"
-	g_ObjectToTypeName.Vector3i = "userdata"
-
-	-- enums
-	g_ObjectToTypeName["cBoat#eMaterial"] = "number"
-	g_ObjectToTypeName["cEntity#eEntityType"] = "number"
-	g_ObjectToTypeName["cEntityEffect#eType"] = "number"
-	g_ObjectToTypeName["cMonster#eFamily"] = "number"
-	g_ObjectToTypeName.eBlockFace = "number"
-	g_ObjectToTypeName.eDamageType = "number"
-	g_ObjectToTypeName.eDimension = "number"
-	g_ObjectToTypeName.eGameMode = "number"
-	g_ObjectToTypeName.EMCSBiome = "number"
-	g_ObjectToTypeName.eMessageType = "number"
-	g_ObjectToTypeName.eMobHeadRotation = "number"
-	g_ObjectToTypeName.eMobHeadType = "number"
-	g_ObjectToTypeName.eMonsterType = "number"
-	g_ObjectToTypeName.eShrapnelLevel = "number"
-	g_ObjectToTypeName.eWeather = "number"
-
-
-	-- This list contains functions that causes false positives
+	-- This list contains functions (if any) that causes false positives
 	-- TODO: Add better test code for the functions below to correct them
 	-- [Class name][Function name]
 	g_FalsePositives = {}
