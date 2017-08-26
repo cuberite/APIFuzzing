@@ -63,7 +63,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	for i = 1, #a_Params do
 		if a_Params[i] == "number" then
 			hasNumber = true
-			tmp[i] = -999999999999
+			tmp[i] = -10000
 		else
 			tmp[i] = inputs[1][i]
 		end
@@ -77,7 +77,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	for i = 1, #a_Params do
 		if a_Params[i] == "number" then
 			hasNumber = true
-			tmp[i] = 999999999999
+			tmp[i] = 10000
 		else
 			tmp[i] = inputs[1][i]
 		end
@@ -124,7 +124,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	for _ = 1, 10 do
 		tmp = {}
 		for i = 1, #a_Params do
-				tmp[i] = math.random(-100000000000, 10000000000)
+				tmp[i] = math.random(-10000, 10000)
 		end
 		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
 	end
