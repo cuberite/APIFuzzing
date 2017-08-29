@@ -14,6 +14,23 @@ function CreateTables()
 	g_BlockEntityToBlockType.cMobSpawnerEntity = E_BLOCK_MOB_SPAWNER
 	g_BlockEntityToBlockType.cNoteEntity = E_BLOCK_NOTE_BLOCK
 
+	g_ObjectToTypeName = {}
+
+	-- Classes
+	g_ObjectToTypeName.ItemCategory = "userdata"
+	g_ObjectToTypeName.TakeDamageInfo = "userdata"
+	g_ObjectToTypeName.Vector3d = "userdata"
+	g_ObjectToTypeName.Vector3f = "userdata"
+	g_ObjectToTypeName.Vector3i = "userdata"
+
+
+	-- Table containg enum type to enum value
+	g_EnumValues = {}
+	g_EnumValues.EMCSBiome = "biSky"
+	g_EnumValues.eMonsterType = "mtBat"
+	g_EnumValues.SmokeDirection = "SmokeDirection.EAST"
+	g_EnumValues.eGameMode = "gmAdventure"
+
 
 	-- This list contains functions (if any) that causes false positives
 	-- TODO: Add better test code for the functions below to correct them

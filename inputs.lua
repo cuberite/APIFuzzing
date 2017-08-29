@@ -5,12 +5,12 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 		table.insert(inputs, CreateValidParams(a_ClassName, a_FunctionName, tbParams))
 	end
 
-        -- Add IsStatic flag, if necessary
-        for i = 1,#inputs do
-                -- Add IsStatic flag
-                if a_Params[i].IsStatic then
-                        inputs[i].IsStatic = true
-                end
+	-- Add IsStatic flag, if necessary
+	for i = 1,#inputs do
+		-- Add IsStatic flag
+		if a_Params[i].IsStatic then
+			inputs[i].IsStatic = true
+		end
 	end
 
 	-- If we are not fuzzing. Check if a param has value nil.
@@ -39,7 +39,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 						return nil
 					end
 					LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
-					assert(false, "The param " .. a_Params[i][index] .. " has value nil.")
+					Abort("The param " .. a_Params[i][index] .. " has value nil.")
 				end
 			end
 		end
@@ -124,7 +124,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	for _ = 1, 10 do
 		tmp = {}
 		for i = 1, #a_Params do
-				tmp[i] = math.random(-10000, 10000)
+			tmp[i] = math.random(-10000, 10000)
 		end
 		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
 	end
@@ -144,7 +144,15 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 	local inputs = {}
 
 	for index, param in ipairs(a_Params) do
-		if param == "cUUID" then
+		if g_EnumValues[param] ~= nil then
+			inputs[index] = g_EnumValues[param]
+		elseif
+			(string.find(param, "#") ~= nil) or
+			(string.find(param, "^e") ~= nil) or
+			(string.find(param, "*") ~= nil)
+		then
+			inputs[index] = GetEnumValue(param)
+		elseif param == "cUUID" then
 			inputs[index] = "cUUID()"
 		elseif param == "string" then
 			if a_ClassName == "cEnchantments" then
@@ -260,16 +268,10 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "nil"
 		elseif param == "cClientHandle" then
 			inputs[index] = "nil"
-		elseif param == "eMessageType" then
-			inputs[index] = "mtCustom"
-		elseif param == "eWeather" then
-			inputs[index] = "wSunny"
 		elseif param == "cMonster" then
 			inputs[index] = "nil"
 		elseif param == "cItems" then
 			inputs[index] = "cItems()"
-		elseif param == "EMCSBiome" then
-			inputs[index] = "biSky"
 		elseif param == "table" then
 			if a_ClassName == "cJson" then
 				if a_FunctionName == "Serialize" then
@@ -323,8 +325,6 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			end
 		elseif param == "Vector3f" then
 			inputs[index] = "Vector3f(1, 1, 1)"
-		elseif param == "cProjectileEntity#eKind" then
-			inputs[index] = "pkArrow"
 		elseif param == "cEntity" then
 			inputs[index] = "nil"
 		elseif param == "cBoundingBox" then
@@ -339,73 +339,36 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			end
 		elseif param == "cCuboid" then
 			inputs[index] = "cCuboid(10, 10, 10)"
-		elseif param == "eExplosionSource" then
-			inputs[index] = "esBed"
 		elseif param == "cWorld" then
 			inputs[index] = "cRoot:Get():GetWorld('world')"
-		elseif param == "eDamageType" then
-			inputs[index] = "dtLightning"
 		elseif param == "cEnchantments" then
 			inputs[index] = "cEnchantments()"
-		elseif param == "cMonster#eFamily" then
-			inputs[index] = "cMonster.mfPassive"
-		elseif param == "eMonsterType" then
-			inputs[index] = "mtBat"
-		elseif param == "cEntityEffect#eType" then
-			inputs[index] = "cEntityEffect.effInvisibility"
-		elseif param == "eShrapnelLevel" then
-			inputs[index] = "slGravityAffectedOnly"
 		elseif param == "cBlockArea" then
 			inputs[index] = "nil"
-		elseif param == "cPluginManager#PluginHook" then
-			inputs[index] = "HOOK_BLOCK_SPREAD"
 		elseif param == "..." then
 			inputs[index] = "nil"
 		elseif param == "HTTPRequest" then
 			inputs[index] = "nil"
-		elseif param == "eMobHeadRotation" then
-			inputs[index] = "SKULL_ROTATION_EAST"
-		elseif param == "eMobHeadType" then
-			inputs[index] = "SKULL_TYPE_CREEPER"
 		elseif param == "cEntityEffect" then
 			inputs[index] = "nil"
 		elseif param == "cCraftingGrid" then
 			inputs[index] = "nil"
-		elseif param == "eBlockFace" then
-			inputs[index] = "BLOCK_FACE_BOTTOM"
 		elseif param == "cCompositeChat" then
 			inputs[index] = "cCompositeChat()"
 		elseif param == "cIniFile" then
 			inputs[index] = "nil"
-		elseif param == "eClickAction" then
-			inputs[index] = "caCtrlDropKey"
-		elseif param == "cWindow#WindowType" then
-			inputs[index] = "cWindow.wtChest"
-		elseif param == "cArrowEntity#ePickupState" then
-			inputs[index] = "psNoPickup"
 		elseif param == "cWindow" then
 			inputs[index] = "nil"
-		elseif param == "eSkinPart" then
-			inputs[index] = "spCape"
 		elseif param == "cTeam" then
 			inputs[index] = "nil"
-		elseif param == "eGameMode" then
-			inputs[index] = "eGameMode_Adventure"
-		elseif param == "eMainHand" then
-			inputs[index] = "mhLeft"
 		elseif param == "any" then  -- Different source different entity
 			inputs[index] = "nil"
 		elseif param == "<unknown>" then  -- TODO
 			inputs[index] = "nil"
-		elseif param == "eDimension" then
-			inputs[index] = "dimOverworld"
-		elseif param == "cBoat#eMaterial" then
-			inputs[index] = "cBoat.bmOak"
 		end
 
 		if inputs[index] == nil then
-			CreateStopFile()
-			assert(false, "Param not handled: " .. param)
+			Abort("Param not handled: " .. param)
 		end
 	end
 

@@ -8,6 +8,8 @@ function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 			rType == "table"
 		then
 			ret[index] = rType
+		elseif g_ObjectToTypeName[rType] ~= nil then
+			ret[index] = g_ObjectToTypeName[rType]
 		elseif
 			a_ClassName == "cCompositeChat" and
 			rType == "self"
@@ -28,8 +30,7 @@ function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 		end
 
 		if ret[index] == nil then
-			CreateStopFile()
-			assert(false, string.format("ObjectToTypeName(%s, %s): %s not handled", a_ClassName, a_FunctionName, rType))
+			Abort(string.format("ObjectToTypeName(%s, %s): %s not handled", a_ClassName, a_FunctionName, rType))
 		end
 	end
 	return ret
@@ -116,8 +117,7 @@ function LoadTableIgnore()
 
 	local fncIgnore = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")
 	if (fncIgnore == nil) then
-		CreateStopFile()
-		assert(false,  "The file ignore_table.txt could not be loaded.")
+		Abort("The file ignore_table.txt could not be loaded.")
 	end
 	g_Ignore = fncIgnore()
 end
@@ -157,8 +157,7 @@ function LoadTableCrashed()
 
 	local fncCrashed = loadfile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")
 	if (fncCrashed == nil) then
-		CreateStopFile()
-		assert(false,  "The file crashed_table.txt could not be loaded.")
+		Abort("The file crashed_table.txt could not be loaded.")
 	end
 	g_Crashed = fncCrashed()
 end
@@ -256,7 +255,108 @@ end
 
 
 
-function CreateStopFile()
+-- Find enum value for the passed enum type
+-- Looks first into the table g_EnumValues.
+-- If not found, searches in APIDesc
+function GetEnumValue(a_EnumType)
+	if g_EnumValues[a_EnumType] ~= nil then
+		return g_EnumValues[a_EnumType]
+	end
+
+	-- Search in APIDoc
+	if string.find(a_EnumType, "#") ~= nil then
+		local tbClassEnumType = StringSplit(a_EnumType, "#")
+		local class = GetClass(tbClassEnumType[1])
+		local include = class.ConstantGroups[tbClassEnumType[2]].Include
+
+		if
+			type(include) == "table" and
+			(string.find(include[1], "^") ~= nil) and
+			(string.find(include[1], "*") ~= nil)
+		then
+			-- A Include with pattern can be a string or a table:
+			-- Include = { "^gm.*" } or Include = "^gm.*"
+			include = include[1]
+		end
+
+		if type(include) == "table" then
+			g_EnumValues[a_EnumType] = tbClassEnumType[1] .. "." .. include[1]
+			return g_EnumValues[a_EnumType]
+		end
+
+		for var, value in pairs(_G[tbClassEnumType[1]]) do
+			if string.find(var, include) ~= nil then
+				g_EnumValues[a_EnumType] = tbClassEnumType[1] .. "." ..var
+				return g_EnumValues[a_EnumType]
+			end
+		end
+	else
+		-- Check Globals in APIDesc
+		local class = GetClass("Globals", a_EnumType)
+		if class.ConstantGroups[a_EnumType] ~= nil then
+			local include = class.ConstantGroups[a_EnumType].Include
+
+			if
+				type(include) == "table" and
+				(string.find(include[1], "^") ~= nil) and
+				(string.find(include[1], "*") ~= nil)
+			then
+				-- A Include with pattern can be a string or a table:
+				-- Include = { "^gm.*" } Include = "^gm.*"
+				include = include[1]
+			end
+
+			if
+				type(include) == "table"
+			then
+				-- Return first entry of table
+				g_EnumValues[a_EnumType] = include[1]
+				return g_EnumValues[a_EnumType]
+			else
+				-- Check for pattern
+				if
+					string.find(include, "^") ~= nil or
+					string.find(include, "*") ~= nil
+				then
+					-- Check _G
+					for var, value in pairs(_G) do
+						if (
+							(value ~= _G) and           -- don't want the global namespace
+							(value ~= _G.packages) and  -- don't want any packages
+							(value ~= _G[".get"])
+						) then
+							if (type(var) == "string") and string.find(var, include) then
+								g_EnumValues[a_EnumType] = var
+								return var
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	Abort("Enum not found: " .. a_EnumType)
+end
+
+
+
+-- Loops over the API files and searches the class
+function GetClass(a_ClassName, a_EnumType)
+	for _, tbClasses in pairs(g_APIDesc) do
+		if tbClasses[a_ClassName] ~= nil then
+			return tbClasses[a_ClassName]
+		end
+	end
+
+	Abort("Class not found: " .. a_ClassName)
+end
+
+
+
+function Abort(a_ErrorMessage)
 	local fileStop = io.open("stop.txt", "w")
 	fileStop:close()
+
+	assert(false, a_ErrorMessage)
 end

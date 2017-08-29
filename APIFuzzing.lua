@@ -1,5 +1,6 @@
 g_Plugin = nil
 g_Ignore = {}
+g_APIDesc = {}
 
 function Initialize(a_Plugin)
 	g_Plugin = a_Plugin
@@ -21,6 +22,16 @@ function Initialize(a_Plugin)
 
 	cPluginManager.BindConsoleCommand("fuzzing", CmdFuzzing, " - fuzzing the api")
 	cPluginManager.BindConsoleCommand("checkapi", CmdCheckAPI, " - check the api")
+
+	-- Load and store the whole API
+	local pathClasses = table.concat({ "Plugins", "APIDump", "Classes" }, cFile:GetPathSeparator())
+	local pathAPIDesc = table.concat({ "Plugins", "APIDump", "APIDesc.lua" }, cFile:GetPathSeparator())
+
+	for _, fileClass in ipairs(cFile:GetFolderContents(pathClasses)) do
+		g_APIDesc[fileClass] = loadfile(pathClasses .. cFile:GetPathSeparator() .. fileClass)()
+	end
+	g_APIDesc["APIDesc.lua"] = loadfile(pathAPIDesc)().Classes
+
 	return true
 end
 
@@ -32,16 +43,12 @@ end
 
 
 function CmdCheckAPI(a_Split)
-	local pathClasses = table.concat({ "Plugins", "APIDump", "Classes" }, cFile:GetPathSeparator())
-	local pathAPIDesc = table.concat({ "Plugins", "APIDump", "APIDesc.lua" }, cFile:GetPathSeparator())
-
 	-- Create functions with valid params, with flag IsStatic if any
 	-- and checks the return types
 	-- Check log files and console output for warnings and errors
-	for _, fileClass in ipairs(cFile:GetFolderContents(pathClasses)) do
-		CheckAPI(loadfile(pathClasses .. cFile:GetPathSeparator() .. fileClass)())
+	for _, entry in pairs(g_APIDesc) do
+		CheckAPI(entry)
 	end
-	CheckAPI(loadfile(pathAPIDesc)().Classes)
 
 	LOG("CheckAPI completed!")
 	return true
@@ -50,22 +57,18 @@ end
 
 
 function CmdFuzzing(a_Split)
-	local pathClasses = table.concat({ "Plugins", "APIDump", "Classes" }, cFile:GetPathSeparator())
-	local pathAPIDesc = table.concat({ "Plugins", "APIDump", "APIDesc.lua" }, cFile:GetPathSeparator())
-
 	-- Fuzzing the functions, pass nil, different types, etc.
 	-- Check log files and console output for warnings and errors
-	for _, fileClass in ipairs(cFile:GetFolderContents(pathClasses)) do
-		RunFuzzing(loadfile(pathClasses .. cFile:GetPathSeparator() .. fileClass)())
+	for _, entry in pairs(g_APIDesc) do
+		RunFuzzing(entry)
 	end
-	RunFuzzing(loadfile(pathAPIDesc)().Classes)
-
 
 	LOG("Fuzzing completed!")
 
 	-- If reached here, we haven't got an crash.
 	-- Tell the run script, that fuzzing is completed
-	CreateStopFile()
+	local fileStop = io.open("stop.txt", "w")
+	fileStop:close()
 
 	-- Stop server
 	-- cRoot:Get():QueueExecuteConsoleCommand("stop")
@@ -241,6 +244,18 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			-- Add function and params to call
 			fncTest = fncTest .. " GatherReturnValues(obj:" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
 		end
+		if a_ClassName == "cBookContent" then
+			fncTest =
+[[local obj = cBookContent()
+local pages =
+{
+	"First page",
+	"Second page"
+}
+obj:SetPages(pages)
+GatherReturnValues(obj:]]
+			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
+		end
 		if a_ClassName == "cExpOrb" then
 			fncTest =
 [[local world = cRoot:Get():GetDefaultWorld()
@@ -297,9 +312,7 @@ local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
 	end
 
 	if fncTest == "" then
-		LOG(string.format("Not handled: %s, %s", a_ClassName, a_FunctionName))
-		CreateStopFile()
-		assert(false)
+		Abort(string.format("Not handled: %s, %s", a_ClassName, a_FunctionName))
 	end
 
 	-- Load function, check for syntax problems
@@ -313,8 +326,7 @@ local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
 		LOG("")
 		LOG("This indicates a problem in the generation of the code in this plugin. Plugin will be stopped.")
 		LOG("#########################################################################################################")
-		CreateStopFile()
-		assert(false, "Runtime of plugin stopped, because of syntax error.")
+		Abort("Runtime of plugin stopped, because of syntax error.")
 	end
 
 	if a_IsFuzzing then
