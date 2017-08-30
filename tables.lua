@@ -135,8 +135,6 @@ function CreateSharedIgnoreTable()
 
 	-- Unclear
 	g_IgnoreShared.cItemFrame = "*"
-	g_IgnoreShared.cMap = "*"
-	g_IgnoreShared.cMapManager = "*"
 
 	-- cWorld:CreateProjectile
 	g_IgnoreShared.cArrowEntity = "*"
@@ -153,6 +151,8 @@ function CreateSharedIgnoreTable()
 	-- Requires player
 	g_IgnoreShared.cFloater = "*"
 	g_IgnoreShared.cInventory = "*"
+	g_IgnoreShared.cMap = "*"
+	g_IgnoreShared.cMapManager = "*"
 	g_IgnoreShared.cObjective = "*"
 	g_IgnoreShared.cScoreboard = "*"
 	g_IgnoreShared.cTeam = "*"

@@ -194,31 +194,12 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	local fncTest = ""
 
 	if not(a_IsStatic) then
-		if a_ClassName == "cEntity" then
-			fncTest = "cRoot:Get():GetDefaultWorld():ForEachEntity(function(a_Entity)"
-			fncTest = fncTest .. " GatherReturnValues(a_Entity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) return true end)"
-		elseif a_ClassName == "cMonster" then
-			fncTest = "cRoot:Get():GetDefaultWorld():ForEachEntity(function(a_Entity) if not(a_Entity:IsMob()) then return end"
-			fncTest = fncTest .. " local monster = tolua.cast(a_Entity, '" .. a_ClassName .. "' )"
-			fncTest = fncTest .. " GatherReturnValues(monster:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) return true end)"
-		elseif a_ClassName == "cWorld" then
-			if a_FunctionName == "GetSignLines" then
-				fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_SIGN_POST, 0)"
-				fncTest = fncTest .. "GatherReturnValues(cRoot:Get():GetDefaultWorld():GetSignLines(10, 100, 10))"
+		if g_Code[a_ClassName] ~= nil then
+			if g_Code[a_ClassName][a_FunctionName] ~= nil then
+				fncTest = g_Code[a_ClassName][a_FunctionName](a_ParamTypes)
 			else
-				fncTest = "GatherReturnValues(cRoot:Get():GetDefaultWorld():" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
+				fncTest = g_Code[a_ClassName].Class(a_FunctionName, a_ParamTypes)
 			end
-		elseif a_ClassName == "cRoot" then
-			fncTest = "GatherReturnValues(cRoot:Get():" .. a_FunctionName
-			fncTest = fncTest .."(" .. a_ParamTypes .. "))"
-		elseif a_ClassName == "cWebAdmin" then
-			fncTest = "GatherReturnValues(cRoot:Get():GetWebAdmin():" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
-		elseif a_ClassName == "cItemGrid" then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)"
-			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,"
-			fncTest = fncTest .. " function(a_ChestEntity) GatherReturnValues(a_ChestEntity:GetContents():" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		elseif a_ClassName == "cServer" then
-			fncTest = "GatherReturnValues(cRoot:Get():GetServer():" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
 		elseif g_BlockEntityToBlockType[a_ClassName] ~= nil then
 			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
 			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithBlockEntityAt(10, 100, 10,"
@@ -244,58 +225,6 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			-- Add function and params to call
 			fncTest = fncTest .. " GatherReturnValues(obj:" .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
 		end
-		if a_ClassName == "cBookContent" then
-			fncTest =
-[[local obj = cBookContent()
-local pages =
-{
-	"First page",
-	"Second page"
-}
-obj:SetPages(pages)
-GatherReturnValues(obj:]]
-			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. "))"
-		end
-		if a_ClassName == "cExpOrb" then
-			fncTest =
-[[local world = cRoot:Get():GetDefaultWorld()
-local entityID = world:SpawnExperienceOrb(1, 255, 1, 1000)
-world:DoWithEntityByID(entityID, function(a_Entity)
-local exp_orb = tolua.cast(a_Entity, "cExpOrb")
-GatherReturnValues(exp_orb:]]
-			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		end
-		if a_ClassName == "cFallingBlock" then
-			fncTest =
-[[local world = cRoot:Get():GetDefaultWorld()
-local entityID = world:SpawnFallingBlock(1, 255, 1, 12, 1)
-world:DoWithEntityByID(entityID, function(a_Entity)
-local obj = tolua.cast(a_Entity, "cFallingBlock") GatherReturnValues(obj:]]
-			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		end
-		if a_ClassName == "cPickup" then
-			fncTest =
-[[local world = cRoot:Get():GetDefaultWorld()
-local items = cItems() items:Add(cItem(1, 64))
-world:SpawnItemPickups(items, 1, 200, 1, 0)
-world:ForEachEntity(function(a_Entity)
-if not(a_Entity:IsPickup()) then return end
-local obj = tolua.cast(a_Entity, "cPickup") GatherReturnValues(obj:]]
-			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		end
-		if a_ClassName == "cBoat" then
-			fncTest =
-[[local world = cRoot:Get():GetDefaultWorld()
-local entityID = world:SpawnBoat(1, 200, 1, cBoat.bmOak)
-world:DoWithEntityByID(entityID, function(a_Entity)
-if not(a_Entity:IsBoat()) then return end
-local obj = tolua.cast(a_Entity, "cBoat") GatherReturnValues(obj:]]
-			fncTest = fncTest .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
-		end
-	end
-
-	if a_ClassName == "Globals" then
-		fncTest = "GatherReturnValues(" .. a_FunctionName .."(" .. a_ParamTypes .. "))"
 	end
 
 	if a_IsStatic then
