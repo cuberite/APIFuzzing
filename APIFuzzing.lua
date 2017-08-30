@@ -260,6 +260,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 
 	if a_IsFuzzing then
 		 -- Save class name, function and params, in case of a crash
+		 fncTest = ReplaceString(ReplaceString(fncTest, "\n", ""), "\t", " ")
 		 SaveCurrentTest(a_ClassName, a_FunctionName, fncTest)
 
 		-- Add to table ignore
