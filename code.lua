@@ -272,6 +272,12 @@ GatherReturnValues(cRoot:Get():GetDefaultWorld():GetSignLines(10, 100, 10))]]
 end
 
 
+g_Code.cPluginManager = {}
+g_Code.cPluginManager.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format("GatherReturnValues(cPluginManager:Get():%s(%s))", a_FunctionName, a_ParamTypes)
+end
+
 
 g_Code.cRoot = {}
 g_Code.cRoot.Class =

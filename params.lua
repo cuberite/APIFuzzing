@@ -110,6 +110,18 @@ g_Params.cPlayer.OpenWindow = "cLuaWindow(cWindow.wtChest, 9, 3, 'Hidden chest')
 
 
 
+g_Params.cPluginManager = {}
+g_Params.cPluginManager.DoWithPlugin =
+{ "'Core'", "function() g_CallbackCalled = true return true end" }
+g_Params.cPluginManager.ForEachCommand =
+"function() g_CallbackCalled = true return true end"
+g_Params.cPluginManager.ForEachConsoleCommand =
+"function() g_CallbackCalled = true return true end"
+g_Params.cPluginManager.ForEachPlugin =
+"function() g_CallbackCalled = true return true end"
+
+
+
 g_Params.cRoot = {}
 g_Params.cRoot.DoWithPlayerByUUID =
 {
@@ -120,11 +132,11 @@ g_Params.cRoot.DoWithPlayerByUUID =
 g_Params.cRoot.FindAndDoWithPlayer =
 {
 	"g_BotName",
-	"function(a_Player) g_CallbackCalled = true end"
+	"function() g_CallbackCalled = true end"
 }
 
-g_Params.cRoot.ForEachPlayer = "function(a_Player) g_CallbackCalled = true return true end"
-g_Params.cRoot.ForEachWorld = "function(a_World) g_CallbackCalled = true return true end"
+g_Params.cRoot.ForEachPlayer = "function() g_CallbackCalled = true return true end"
+g_Params.cRoot.ForEachWorld = "function() g_CallbackCalled = true return true end"
 g_Params.cRoot.GetBrewingRecipe = { "cItem(E_ITEM_POTION)", "cItem(E_ITEM_NETHER_WART)" }
 g_Params.cRoot.GetFurnaceRecipe = "cItem(E_ITEM_RAW_FISH)"
 g_Params.cRoot.GetWorld = "'world'"
@@ -134,22 +146,22 @@ g_Params.cWorld = {}
 g_Params.cWorld.DoWithPlayer =
 {
 	"g_BotName",
-	"function(a_Player) g_CallbackCalled = true end"
+	"function() g_CallbackCalled = true end"
 }
 g_Params.cWorld.DoWithPlayerByUUID =
 {
 	"cUUID:GenerateVersion3(g_BotName)",
-	"function(a_Player) g_CallbackCalled = true end"
+	"function() g_CallbackCalled = true end"
 }
 
 g_Params.cWorld.FindAndDoWithPlayer =
 {
 	"g_BotName",
-	"function(a_Player) g_CallbackCalled = true end"
+	"function() g_CallbackCalled = true end"
 }
-g_Params.cWorld.ForEachEntity = "function(a_Entity) g_CallbackCalled = true return true end"
-g_Params.cWorld.ForEachLoadedChunk = "function(a_Chunk) g_CallbackCalled = true return true end"
-g_Params.cWorld.ForEachPlayer = "function(a_Player) g_CallbackCalled = true return true end"
+g_Params.cWorld.ForEachEntity = "function() g_CallbackCalled = true return true end"
+g_Params.cWorld.ForEachLoadedChunk = "function() g_CallbackCalled = true return true end"
+g_Params.cWorld.ForEachPlayer = "function() g_CallbackCalled = true return true end"
 
 
 

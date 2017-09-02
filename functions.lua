@@ -390,11 +390,6 @@ function IsIgnored(a_ClassName, a_FunctionName)
 		return false
 	end
 
-	-- Check if g_Code contains the class
-	if g_Code[a_ClassName] ~= nil then
-		return false
-	end
-
 	if
 		g_IgnoreShared[a_ClassName] ~= "*" and
 		g_IgnoreShared[a_ClassName][a_FunctionName] == nil and
