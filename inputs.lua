@@ -2,7 +2,12 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 	local inputs = {}
 
 	for _, tbParams in ipairs(a_Params) do
-		table.insert(inputs, CreateValidParams(a_ClassName, a_FunctionName, tbParams))
+		local tbTemp = CreateValidParams(a_ClassName, a_FunctionName, tbParams)
+		if tbTemp == nil then
+			LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
+			Abort("Got nil, expected a table!")
+		end
+		table.insert(inputs, tbTemp)
 	end
 
 	-- Add IsStatic flag, if necessary
@@ -25,14 +30,11 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 						a_Params[i][index] == "any" or
 						a_Params[i][index] == "cBlockArea" or
 						a_Params[i][index] == "cClientHandle" or
-						a_Params[i][index] == "cCraftingGrid" or
 						a_Params[i][index] == "cEntity" or
-						a_Params[i][index] == "cEntityEffect" or
 						a_Params[i][index] == "cIniFile" or
 						a_Params[i][index] == "cMonster" or
 						a_Params[i][index] == "cPlayer" or
 						a_Params[i][index] == "cTeam" or
-						a_Params[i][index] == "cWindow" or
 						a_Params[i][index] == "function" or
 						a_Params[i][index] == "HTTPRequest"
 					then
@@ -141,6 +143,28 @@ end
 
 
 function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
+	if g_Params[a_ClassName] ~= nil then
+		if g_Params[a_ClassName][a_FunctionName] ~= nil then
+			if
+				type(g_Params[a_ClassName][a_FunctionName]) == "string" or
+				type(g_Params[a_ClassName][a_FunctionName]) == "number"
+			then
+				if #a_Params > 1 then
+					LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
+					Abort("Expected a table with " .. #a_Params .. " items")
+				end
+				return { g_Params[a_ClassName][a_FunctionName] }
+			elseif type(g_Params[a_ClassName][a_FunctionName]) == "table" then
+				return g_Params[a_ClassName][a_FunctionName]
+			elseif type(g_Params[a_ClassName][a_FunctionName]) == "function" then
+				return g_Params[a_ClassName][a_FunctionName](a_Params)
+			end
+
+			LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
+			Abort("Type not handled: " .. type(g_Params[a_ClassName][a_FunctionName]))
+		end
+	end
+
 	local inputs = {}
 
 	for index, param in ipairs(a_Params) do
@@ -155,113 +179,17 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		elseif param == "cUUID" then
 			inputs[index] = "cUUID()"
 		elseif param == "string" then
-			if a_ClassName == "cEnchantments" then
-				if a_FunctionName == "AddFromString" then
-					inputs[index] = "'Looting = 1'"
-				elseif a_FunctionName == "StringToEnchantmentID" then
-					inputs[index] = "'Infinity'"
-				end
-			elseif a_ClassName == "cRoot" then
-				if a_FunctionName == "GetWorld" then
-					inputs[index] = "'world'"
-				end
-			elseif a_ClassName == "cJson" then
-				if a_FunctionName == "Parse" then
-					inputs[index] = "'{ \"amount\" : 30 }'"
-				end
-			end
-
 			if inputs[index] == nil then
 				-- If reached here return JustAString.
 				-- If an error occurs add special handling above
 				inputs[index] = "'JustAString'"
 			end
 		elseif param == "number" then
-			if a_ClassName == "cLineBlockTracer" then
-				if a_FunctionName == "FirstSolidHitTrace" then
-					if index == 2 then
-						inputs[index] = 1
-					elseif index == 3 then
-						 inputs[index] = 255
-					elseif index == 4 then
-							inputs[index] = 1
-							inputs[index] = 1
-					elseif index == 5 then
-							inputs[index] = 1
-					elseif index == 6 then
-							inputs[index] = 1
-					elseif index == 7 then
-							inputs[index] = 1
-					end
-				end
-			elseif a_ClassName == "cItems" then
-				if a_FunctionName == "Delete" or a_FunctionName == "Get" or a_FunctionName == "Set" then
-					inputs[index] = 0
-				end
-			elseif a_ClassName == "ItemCategory" then
-				if a_FunctionName == "IsMinecart" then
-					inputs[index] = "E_ITEM_CHEST_MINECART"
-				elseif a_FunctionName == "IsChestPlate" then
-					inputs[index] = "E_ITEM_CHAIN_CHESTPLATE"
-				elseif a_FunctionName == "IsTool" then
-					inputs[index] = "E_ITEM_IRON_PICKAXE"
-				elseif a_FunctionName == "IsBoots" then
-					inputs[index] = "E_ITEM_DIAMOND_BOOTS"
-				elseif a_FunctionName == "IsArmor" then
-					inputs[index] = "E_ITEM_DIAMOND_HORSE_ARMOR"
-				elseif a_FunctionName == "IsHelmet" then
-					inputs[index] = "E_ITEM_LEATHER_CAP"
-				elseif a_FunctionName == "IsHoe" then
-					inputs[index] = "E_ITEM_WOODEN_HOE"
-				elseif a_FunctionName == "IsLeggings" then
-					inputs[index] = "E_ITEM_LEATHER_PANTS"
-				end
-			elseif a_ClassName == "cLuaWindow" then
-				if index == 2 then
-					inputs[index] = 9
-				elseif index == 3 then
-					inputs[index] = 3
-				end
-			elseif a_ClassName == "cBoundingBox" then
-				if index == 1 then
-					inputs[index] = 110
-				elseif index == 2 then
-					inputs[index] = 188
-				elseif index == 3 then
-					inputs[index] = 5
-				elseif index == 4 then
-					inputs[index] = 176
-				elseif index == 5 then
-					inputs[index] = 76
-				elseif index == 6 then
-					inputs[index] = 160
-				end
-			end
-			if inputs[index] == nil then
-				inputs[index] = 1
-			end
+			inputs[index] = 1
 		elseif param == "boolean" then
 			inputs[index] = "false"
 		elseif param == "cItem" then
-			if a_ClassName == "cRoot" then
-				if a_FunctionName == "GetBrewingRecipe" then
-					if index == 1 then
-						inputs[index] = "cItem(E_ITEM_POTION)"
-					elseif index == 2 then
-						inputs[index] = "cItem(E_ITEM_NETHER_WART)"
-					end
-				elseif a_FunctionName == "GetFurnaceRecipe" then
-					inputs[index] = "cItem(E_ITEM_RAW_FISH)"
-				end
-			elseif a_ClassName == "cBoat" then
-				if a_FunctionName == "ItemToMaterial" then
-					inputs[index] = "cItem(E_ITEM_ACACIA_BOAT)"
-				end
-			end
-
-			if inputs[index] == nil then
-					inputs[index] = "cItem(1, 2)"
-			end
+			inputs[index] = "cItem(1, 2)"
 		elseif param == "function" then
 			inputs[index] = "nil"
 		elseif param == "cPlayer" then
@@ -273,70 +201,17 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		elseif param == "cItems" then
 			inputs[index] = "cItems()"
 		elseif param == "table" then
-			if a_ClassName == "cJson" then
-				if a_FunctionName == "Serialize" then
-					-- Ignore optional param
-					if index == 1 then
-						inputs[index] = "{ ['amount'] = 30 }"
-					end
-				end
-			end
-
-			if inputs[index] == nil then
-				inputs[index] = "{ }"
-			end
+			inputs[index] = "{ }"
 		elseif param == "Vector3i" then
 			inputs[index] = "Vector3i(1, 1, 1)"
 		elseif param == "Vector3d" then
-			if a_ClassName == "cBoundingBox" then
-				if a_FunctionName == "CalcLineIntersection" then
-					 if #a_Params == 2 then
-						-- not is static
-						if index == 1 then
-							inputs[index] = "Vector3d(192, 139, 114)"
-						elseif index == 2 then
-							inputs[index] = "Vector3d(85, 37, 32)"
-						end
-					elseif #a_Params == 4 then
-						-- is static
-						if index == 1 then
-							inputs[index] = "Vector3d(45, 17, 124)"
-						elseif index == 2 then
-							inputs[index] = "Vector3d(243, 229, 236)"
-						elseif index == 3 then
-							inputs[index] = "Vector3d(8, 83, 155)"
-						elseif index == 4 then
-							inputs[index] = "Vector3d(204, 14, 129)"
-						end
-					end
-				end
-			elseif a_ClassName == "cLineBlockTracer" then
-				if a_FunctionName == "FirstSolidHitTrace" then
-					if index == 2 then
-						inputs[index] = "Vector3d(1, 255, 1)"
-					elseif index == 3 then
-						inputs[index] = "Vector3d(1, 1, 1)"
-					end
-				end
-			end
-
-			if inputs[index] == nil then
-				inputs[index] = "Vector3d(1, 1, 1)"
-			end
+			inputs[index] = "Vector3d(1, 1, 1)"
 		elseif param == "Vector3f" then
 			inputs[index] = "Vector3f(1, 1, 1)"
 		elseif param == "cEntity" then
 			inputs[index] = "nil"
 		elseif param == "cBoundingBox" then
-			if a_FunctionName == "Intersect" then
-				inputs[index] = "cBoundingBox(163, 190, 19, 91, 137, 244)"
-			elseif a_FunctionName == "CalcLineIntersection" then
-				inputs[index] = "cBoundingBox(78, 230, 107, 254, 74, 153)"
-			end
-
-			if inputs[index] == nil then
-				inputs[index] = "cBoundingBox(Vector3d(2, 1, 2), Vector3d(10, 256, 10))"
-			end
+			inputs[index] = "cBoundingBox(Vector3d(2, 1, 2), Vector3d(10, 256, 10))"
 		elseif param == "cCuboid" then
 			inputs[index] = "cCuboid(10, 10, 10)"
 		elseif param == "cWorld" then
@@ -349,15 +224,9 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "nil"
 		elseif param == "HTTPRequest" then
 			inputs[index] = "nil"
-		elseif param == "cEntityEffect" then
-			inputs[index] = "nil"
-		elseif param == "cCraftingGrid" then
-			inputs[index] = "nil"
 		elseif param == "cCompositeChat" then
 			inputs[index] = "cCompositeChat()"
 		elseif param == "cIniFile" then
-			inputs[index] = "nil"
-		elseif param == "cWindow" then
 			inputs[index] = "nil"
 		elseif param == "cTeam" then
 			inputs[index] = "nil"
@@ -368,6 +237,7 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		end
 
 		if inputs[index] == nil then
+			LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
 			Abort("Param not handled: " .. param)
 		end
 	end

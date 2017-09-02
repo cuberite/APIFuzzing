@@ -1,3 +1,6 @@
+
+
+-- Finds out the type of the return types
 function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 	local ret = {}
 	for index, rType in ipairs(a_ReturnTypes) do
@@ -38,6 +41,7 @@ end
 
 
 
+-- Gathers the return values from the called function
 function GatherReturnValues(...)
 	if arg.n == 0 then
 		g_ReturnTypes = nil
@@ -66,6 +70,8 @@ end
 
 
 
+-- Called when plugin is loaded
+-- If file crashed.txt exists, a crash occurred on last run
 function CheckIfCrashed()
 	local fileCrashed = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed.txt", "r")
 	if fileCrashed == nil then
@@ -98,6 +104,7 @@ end
 
 
 
+-- Saves current class name, function name and params
 function SaveCurrentTest(a_ClassName, a_FunctionName, a_FunctionAndParams)
 	local fileCurrent = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "current.txt", "w")
 	fileCurrent:write(a_ClassName, "\n")
@@ -108,6 +115,8 @@ end
 
 
 
+-- Loads the table g_Ignore from file
+-- Aborts if file exists and loading fails
 function LoadTableIgnore()
 	-- Check if file exists
 	if not(cFile:IsFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt")) then
@@ -124,6 +133,7 @@ end
 
 
 
+-- Saves the table g_Crashed to file
 function SaveTableIgnore()
 	local fileIgnore = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "ignore_table.txt", "w")
 	fileIgnore:write("return\n{\n")
@@ -148,6 +158,8 @@ end
 
 
 
+-- Loads the table g_Crashed from file
+-- Aborts if file exists and loading fails
 function LoadTableCrashed()
 	-- Check if file exists
 	if not(cFile:IsFile(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt")) then
@@ -164,6 +176,7 @@ end
 
 
 
+-- Saves the table g_Crashed to file
 function SaveTableCrashed()
 	local fileCrashed = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "crashed_table.txt", "w")
 	fileCrashed:write("return\n{\n")
@@ -190,7 +203,7 @@ end
 
 -- Check if passed function table has params
 -- Returns table with tables of param types or nil
--- Also add flag IsStatic, if present
+-- Also adds flag IsStatic, if present
 function GetParamTypes(a_FncInfo, a_FunctionName)
 	local paramTypes = {}
 	if a_FncInfo.Params ~= nil then
@@ -226,6 +239,8 @@ end
 
 
 
+-- Check if passed function table has return types
+-- Returns table with tables of return types or nil
 function GetReturnTypes(a_FncInfo, a_ClassName, a_FunctionName)
 	local returnTypes = {}
 	if a_FncInfo.Returns ~= nil then
@@ -350,6 +365,44 @@ function GetClass(a_ClassName, a_EnumType)
 	end
 
 	Abort("Class not found: " .. a_ClassName)
+end
+
+
+
+function IsIgnored(a_ClassName, a_FunctionName)
+	-- Check if function is ignored, causes crash or is special
+	if
+		(type(g_IgnoreShared[a_ClassName]) == "table" and
+		g_IgnoreShared[a_ClassName][a_FunctionName]) or
+		g_Crashed[a_ClassName][a_FunctionName] ~= nil or
+		a_FunctionName == "constructor" or
+		a_FunctionName == "operator_div" or
+		a_FunctionName == "operator_eq" or
+		a_FunctionName == "operator_mul" or
+		a_FunctionName == "operator_plus" or
+		a_FunctionName == "operator_sub"
+	then
+		return true
+	end
+
+	-- Check if g_Params contains the class and function name
+	if g_Params[a_ClassName] ~= nil and g_Params[a_ClassName][a_FunctionName] ~= nil then
+		return false
+	end
+
+	-- Check if g_Code contains the class
+	if g_Code[a_ClassName] ~= nil then
+		return false
+	end
+
+	if
+		g_IgnoreShared[a_ClassName] ~= "*" and
+		g_IgnoreShared[a_ClassName][a_FunctionName] == nil and
+		g_Crashed[a_ClassName][a_FunctionName] == nil
+	then
+		return false
+	end
+	return true
 end
 
 

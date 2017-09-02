@@ -13,8 +13,7 @@ world:DoWithEntityByID(entityID,
 		if not(a_Entity:IsBoat()) then return end
 		local obj = tolua.cast(a_Entity, "cBoat")
 		GatherReturnValues(obj:%s(%s))
-	end)
-]],	a_FunctionName, a_ParamTypes)
+	end)]],	a_FunctionName, a_ParamTypes)
 end
 
 
@@ -30,8 +29,21 @@ local pages =
 	"Second page"
 }
 obj:SetPages(pages)
-GatherReturnValues(obj:%s(%s))
-]],	a_FunctionName , a_ParamTypes)
+GatherReturnValues(obj:%s(%s))]], a_FunctionName , a_ParamTypes)
+end
+
+
+
+g_Code.cClientHandle = {}
+g_Code.cClientHandle.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[local world = cRoot:Get():GetDefaultWorld()
+world:DoWithPlayer('%s',
+	function(a_Player)
+		g_CallbackCalled = true
+		GatherReturnValues(a_Player:GetClientHandle():%s(%s))
+	end)]], g_BotName, a_FunctionName, a_ParamTypes)
 end
 
 
@@ -44,8 +56,7 @@ function(a_FunctionName, a_ParamTypes)
 	function(a_Entity)
 		GatherReturnValues(a_Entity:%s(%s))
 		return true
-	end)
-]], a_FunctionName , a_ParamTypes)
+	end)]], a_FunctionName , a_ParamTypes)
 end
 
 
@@ -60,8 +71,7 @@ world:DoWithEntityByID(entityID,
 	function(a_Entity)
 		local exp_orb = tolua.cast(a_Entity, "cExpOrb")
 		GatherReturnValues(exp_orb:%s(%s))
-	end)
-]], a_FunctionName , a_ParamTypes)
+	end)]], a_FunctionName , a_ParamTypes)
 end
 
 
@@ -76,8 +86,7 @@ world:DoWithEntityByID(entityID,
 	function(a_Entity)
 		local obj = tolua.cast(a_Entity, "cFallingBlock")
 		GatherReturnValues(obj:%s(%s))
-	end)
-]], a_FunctionName, a_ParamTypes)
+	end)]], a_FunctionName, a_ParamTypes)
 end
 
 
@@ -89,16 +98,30 @@ function(a_FunctionName, a_ParamTypes)
 end
 
 
+
+g_Code.cInventory = {}
+g_Code.cInventory.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[local world = cRoot:Get():GetDefaultWorld()
+world:DoWithPlayer('%s',
+	function(a_Player)
+		g_CallbackCalled = true
+		GatherReturnValues(a_Player:GetInventory():%s(%s))
+	end)]],	g_BotName, a_FunctionName, a_ParamTypes)
+end
+
+
+
 g_Code.cItemGrid = {}
 g_Code.cItemGrid.Class =
 function(a_FunctionName, a_ParamTypes)
 	return string.format(
 [[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
 cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
-function(a_ChestEntity)
-	GatherReturnValues(a_ChestEntity:GetContents():%s(%s))
-end)
-]], a_FunctionName, a_ParamTypes)
+	function(a_ChestEntity)
+		GatherReturnValues(a_ChestEntity:GetContents():%s(%s))
+	end)]], a_FunctionName, a_ParamTypes)
 end
 
 
@@ -136,10 +159,109 @@ end
 
 
 
+g_Code.cPlayer = {}
+g_Code.cPlayer.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[local world = cRoot:Get():GetDefaultWorld()
+world:DoWithPlayer('%s',
+	function(a_Player)
+		g_CallbackCalled = true
+		GatherReturnValues(a_Player:%s(%s))
+	end)
+]],	g_BotName, a_FunctionName, a_ParamTypes)
+end
+
+g_Code.cPawn = {}
+g_Code.cPawn.Class = g_Code.cPlayer.Class
+
+
+
 g_Code.cWorld = {}
 g_Code.cWorld.Class =
 function(a_FunctionName, a_ParamTypes)
 	return string.format("GatherReturnValues(cRoot:Get():GetDefaultWorld():%s(%s))", a_FunctionName, a_ParamTypes)
+end
+
+g_Code.cWorld.DoWithEntityByID =
+function()
+	return
+[[local world = cRoot:Get():GetDefaultWorld()
+local entityID = world:SpawnBoat(1, 200, 1, cBoat.bmOak)
+GatherReturnValues(world:DoWithEntityByID(entityID,
+	function(a_Entity)
+		g_CallbackCalled = true
+		return true
+	end))]]
+end
+
+g_Code.cWorld.ForEachBlockEntityInChunk =
+function()
+	return
+[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_CHEST, 0)
+GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachBlockEntityInChunk(0, 0,
+	function(a_BlockEntity)
+		g_CallbackCalled = true
+		return true
+	end))]]
+end
+
+g_Code.cWorld.ForEachBrewingstandInChunk =
+function()
+	return
+[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_BREWING_STAND, 0)
+GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachBrewingstandInChunk(0, 0,
+	function(a_ChestEntity)
+		g_CallbackCalled = true
+		return true
+	end))]]
+end
+
+g_Code.cWorld.ForEachChestInChunk =
+function()
+	return
+[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_CHEST, 0)
+GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachChestInChunk(0, 0,
+	function(a_ChestEntity)
+		g_CallbackCalled = true
+		return true
+	end))]]
+end
+
+g_Code.cWorld.ForEachEntityInBox =
+function()
+	return
+[[local world = cRoot:Get():GetDefaultWorld()
+world:SpawnBoat(15, 150, 15, cBoat.bmOak)
+GatherReturnValues(world:ForEachEntityInBox(
+	cBoundingBox(Vector3d(1, 60, 1), Vector3d(30, 200, 30)),
+	function(a_Entity)
+		g_CallbackCalled = true
+		return true
+	end))]]
+end
+
+g_Code.cWorld.ForEachEntityInChunk =
+function()
+	return
+[[local world = cRoot:Get():GetDefaultWorld()
+world:SpawnBoat(5, 100, 5, cBoat.bmOak)
+GatherReturnValues(world:ForEachEntityInChunk(0, 0,
+	function(a_Entity)
+		g_CallbackCalled = true
+		return true
+	end))]]
+end
+
+g_Code.cWorld.ForEachFurnaceInChunk =
+function()
+	return
+[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_FURNACE, 0)
+GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachFurnaceInChunk(0, 0,
+	function(a_FurnaceEntity)
+		g_CallbackCalled = true
+		return true
+	end))]]
 end
 
 g_Code.cWorld.GetSignLines =

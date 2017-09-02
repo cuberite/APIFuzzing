@@ -14,6 +14,23 @@ function CreateTables()
 	g_BlockEntityToBlockType.cMobSpawnerEntity = E_BLOCK_MOB_SPAWNER
 	g_BlockEntityToBlockType.cNoteEntity = E_BLOCK_NOTE_BLOCK
 
+
+	g_BlockEntityCallBackToBlockType = {}
+	g_BlockEntityCallBackToBlockType.DoWithBeaconAt = E_BLOCK_BEACON
+	g_BlockEntityCallBackToBlockType.DoWithDropperAt = E_BLOCK_DROPPER
+	g_BlockEntityCallBackToBlockType.DoWithDispenserAt = E_BLOCK_DISPENSER
+	g_BlockEntityCallBackToBlockType.DoWithBrewingstandAt = E_BLOCK_BREWING_STAND
+	g_BlockEntityCallBackToBlockType.DoWithChestAt = E_BLOCK_CHEST
+	g_BlockEntityCallBackToBlockType.DoWithNoteBlockAt = E_BLOCK_NOTE_BLOCK
+	g_BlockEntityCallBackToBlockType.DoWithCommandBlockAt = E_BLOCK_COMMAND_BLOCK
+	g_BlockEntityCallBackToBlockType.DoWithDropSpenserAt = E_BLOCK_DROPPER
+	g_BlockEntityCallBackToBlockType.DoWithFurnaceAt = E_BLOCK_FURNACE
+	g_BlockEntityCallBackToBlockType.DoWithFlowerPotAt = E_BLOCK_FLOWER_POT
+	g_BlockEntityCallBackToBlockType.DoWithBlockEntityAt = E_BLOCK_CHEST
+	g_BlockEntityCallBackToBlockType.DoWithBedAt = E_BLOCK_BED
+	g_BlockEntityCallBackToBlockType.DoWithMobHeadAt = E_BLOCK_HEAD
+
+
 	g_ObjectToTypeName = {}
 
 	-- Classes
@@ -32,6 +49,23 @@ function CreateTables()
 	g_EnumValues.eGameMode = "gmAdventure"
 
 
+	-- Classes, functions that requires a player
+	g_RequiresPlayer = {}
+	g_RequiresPlayer.cClientHandle = true
+	g_RequiresPlayer.cInventory = true
+	g_RequiresPlayer.cPawn = true
+	g_RequiresPlayer.cPlayer = true
+	g_RequiresPlayer.cWorld = {}
+	g_RequiresPlayer.cWorld.DoWithPlayerByUUID = true
+	g_RequiresPlayer.cWorld.DoWithPlayer = true
+	g_RequiresPlayer.cWorld.FindAndDoWithPlayer = true
+	g_RequiresPlayer.cWorld.ForEachPlayer = true
+	g_RequiresPlayer.cRoot = {}
+	g_RequiresPlayer.cRoot.DoWithPlayerByUUID = true
+	g_RequiresPlayer.cRoot.FindAndDoWithPlayer = true
+	g_RequiresPlayer.cRoot.ForEachPlayer = true
+
+
 	-- This list contains functions (if any) that causes false positives
 	-- TODO: Add better test code for the functions below to correct them
 	-- [Class name][Function name]
@@ -46,11 +80,13 @@ function CreateSharedIgnoreTable()
 
 	-- ## Initialize tables ##
 	g_IgnoreShared.cBlockInfo = {}
+	g_IgnoreShared.cClientHandle = {}
 	g_IgnoreShared.cCompositeChat = {}
 	g_IgnoreShared.cDispenserEntity = {}
 	g_IgnoreShared.cDropSpenserEntity = {}
 	g_IgnoreShared.cEntity = {}
 	g_IgnoreShared.cMonster = {}
+	g_IgnoreShared.cPlayer = {}
 	g_IgnoreShared.cRoot = {}
 	g_IgnoreShared.cSplashPotionEntity = {}
 	g_IgnoreShared.cWebAdmin = {}
@@ -82,20 +118,10 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.Globals.LOGERROR = true
 	g_IgnoreShared.Globals.LOGINFO = true
 	g_IgnoreShared.Globals.LOGWARNING = true
-	g_IgnoreShared.Globals.StringToDimension = true
 
 	-- Discussion in process #3651, #3649
 	g_IgnoreShared.cEntity.MoveToWorld = true
 	g_IgnoreShared.cEntity.ScheduleMoveToWorld = true
-
-	-- Marked as to be removed from the api
-	g_IgnoreShared.cEntity.KilledBy = true
-	g_IgnoreShared.cEntity.SetHeight = true
-	g_IgnoreShared.cEntity.SetWidth = true
-
-	-- cSplashPotionEntity:SetEntityEffect requires a instance of
-	-- cEntityEffect, but cEntityEffect has only static functions
-	g_IgnoreShared.cSplashPotionEntity.SetEntityEffect = true
 
 	-- Crashes the server
 	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- #3662
@@ -103,17 +129,19 @@ function CreateSharedIgnoreTable()
 	-- Needs an monster as param
 	g_IgnoreShared.cMonster.GetLeashedTo = true
 
+	-- Requires score board, it's in rework: #3953
+	g_IgnoreShared.cPlayer.GetTeam = true
+
 
 	-- ## Whole class ignored ##
 
 	-- Deprecated
 	g_IgnoreShared.cTracer = "*"
 
-	-- Requires a placed painting
+	-- Has only function GetName
 	g_IgnoreShared.cPainting = "*"
 
 	-- Outputs to console, ignore it
-	g_IgnoreShared.cCraftingGrid = "*"
 	g_IgnoreShared.cRankManager = "*"
 	g_IgnoreShared.cStringCompression = "*"
 
@@ -142,7 +170,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cProjectileEntity = "*"
 	g_IgnoreShared.cSplashPotionEntity = "*"
 
-	-- Has only function SetFacing wth param eBlockFace
+	-- Has only function SetFacing with param eBlockFace
 	g_IgnoreShared.cHangingEntity = "*"
 
 	-- Has only function GetOutputBlockPos with param number
@@ -150,7 +178,6 @@ function CreateSharedIgnoreTable()
 
 	-- Requires player
 	g_IgnoreShared.cFloater = "*"
-	g_IgnoreShared.cInventory = "*"
 	g_IgnoreShared.cMap = "*"
 	g_IgnoreShared.cMapManager = "*"
 	g_IgnoreShared.cObjective = "*"
@@ -190,8 +217,20 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cFile = "*"
 	g_IgnoreShared.cIniFile = "*"
 
-	-- Deadlocks
-	g_IgnoreShared.cClientHandle = "*"  -- Needs a connected player
-	g_IgnoreShared.cPawn = "*"
-	g_IgnoreShared.cPlayer = "*"
+	-- This function doesn't work correctly.
+	-- A client can ignore the disconnect packet: #3159
+	g_IgnoreShared.cClientHandle.Kick = true
+
+	-- TODO: Remove when #3985 has been merged
+	g_IgnoreShared.cClientHandle.SetLocale = true
+
+	-- If a invalid packet is send, the client disconnects
+	g_IgnoreShared.cPlayer.SendMessageRaw = true
+
+	-- This causes problem for fuzzing / checkapi, as the client name is hardcoded
+	g_IgnoreShared.cPlayer.SetName = true
+
+	-- This functions are missing return types in APIDoc
+	g_IgnoreShared.cRoot.ForEachWorld = true
+	g_IgnoreShared.cRoot.ForEachPlayer = true
 end

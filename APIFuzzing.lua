@@ -1,6 +1,7 @@
 g_Plugin = nil
 g_Ignore = {}
 g_APIDesc = {}
+g_BotName = "bot1"
 
 function Initialize(a_Plugin)
 	g_Plugin = a_Plugin
@@ -99,20 +100,7 @@ function RunFuzzing(a_API)
 				inputs = CreateInputs(className, functionName, params, true)
 			end
 
-			if
-				g_IgnoreShared[className] ~= "*" and
-				g_IgnoreShared[className][functionName] == nil and
-				g_Ignore[className] ~= "*" and
-				g_Ignore[className][functionName] == nil and
-				g_Crashed[className][functionName] == nil and
-				functionName ~= "constructor" and
-				functionName ~= "operator_div" and
-				functionName ~= "operator_eq" and
-				functionName ~= "operator_mul" and
-				functionName ~= "operator_plus" and
-				functionName ~= "operator_sub" and
-				inputs ~= nil
-			then
+			if not(IsIgnored(className, functionName)) then
 				FunctionsWithParams(a_API, className, functionName, nil, inputs, true)
 			end
 		end
@@ -137,23 +125,18 @@ function CheckAPI(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
-			if
-				g_IgnoreShared[className] ~= "*" and
-				g_IgnoreShared[className][functionName] == nil and
-				g_Crashed[className][functionName] == nil and
-				functionName ~= "constructor" and
-				functionName ~= "operator_div" and
-				functionName ~= "operator_eq" and
-				functionName ~= "operator_mul" and
-				functionName ~= "operator_plus" and
-				functionName ~= "operator_sub"
-			then
+			if not(IsIgnored(className, functionName)) then
 				local paramTypes = GetParamTypes(tbFncInfo)
 				local returnTypes = GetReturnTypes(tbFncInfo, className, functionName)
 				if paramTypes ~= nil then
 					local inputs = CreateInputs(className, functionName, paramTypes, false)
 					if inputs ~= nil then
 						FunctionsWithParams(a_API, className, functionName, returnTypes, inputs)
+					elseif g_Code[className] ~= nil and g_Code[className][functionName] ~= nil then
+						-- Check for callback functions
+						if string.find(g_Code[className][functionName](), "g_CallbackCalled") then
+							FunctionsWithNoParams(a_API, className, functionName, returnTypes, tbFncInfo.IsStatic)
+						end
 					end
 				else
 					FunctionsWithNoParams(a_API, className, functionName, returnTypes, tbFncInfo.IsStatic)
@@ -193,8 +176,34 @@ end
 function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_ParamTypes, a_IsStatic, a_IsFuzzing)
 	local fncTest = ""
 
+	-- Used for function that requires a callback function
+	-- If callback is called, it sets g_CallbackCalled to true
+	-- If callback is not called, plugin is aborted
+	g_CallbackCalled = false
+	local bHasCallback = false
+
+	if g_RequiresPlayer[a_ClassName] ~= nil then
+		if
+			g_RequiresPlayer[a_ClassName] == true and
+			cRoot:Get():GetServer():GetNumPlayers() == 0
+		then
+			return
+		end
+		if
+			type(g_RequiresPlayer[a_ClassName]) == "table" and
+			g_RequiresPlayer[a_ClassName][a_FunctionName] ~= nil and
+			cRoot:Get():GetServer():GetNumPlayers() == 0
+		then
+			return
+		end
+	end
+
 	if not(a_IsStatic) then
-		if g_Code[a_ClassName] ~= nil then
+		if g_BlockEntityCallBackToBlockType[a_FunctionName] ~= nil then
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityCallBackToBlockType[a_FunctionName] ..", 0)"
+			fncTest = fncTest .. " GatherReturnValues(cRoot:Get():GetDefaultWorld():".. a_FunctionName .. "(10, 100, 10,"
+			fncTest = fncTest .. "function(a_BlockEntity) g_CallbackCalled = true end))"
+		elseif g_Code[a_ClassName] ~= nil then
 			if g_Code[a_ClassName][a_FunctionName] ~= nil then
 				fncTest = g_Code[a_ClassName][a_FunctionName](a_ParamTypes)
 			else
@@ -203,11 +212,11 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		elseif g_BlockEntityToBlockType[a_ClassName] ~= nil then
 			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
 			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithBlockEntityAt(10, 100, 10,"
-			fncTest = fncTest .. " function(a_BlockEntity) local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
+			fncTest = fncTest .. " function(a_BlockEntity) g_CallbackCalled = true local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
 
-		if a_API[a_ClassName].Functions.constructor ~= nil then
+		if a_API[a_ClassName].Functions.constructor ~= nil and fncTest == "" then
 			local constParams = GetParamTypes(a_API[a_ClassName].Functions.constructor)
 			if constParams ~= nil and #constParams ~= 0 then
 				local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
@@ -275,7 +284,16 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		return
 	end
 
+	if string.find(fncTest, "g_CallbackCalled") ~= nil then
+		bHasCallback = true
+	end
+
 	local status, errRuntime = pcall(fnc)
+
+	if bHasCallback and not(g_CallbackCalled) then
+		LOG("\n" .. fncTest)
+		Abort("Callback-function has not been called.")
+	end
 
 	-- Check if an error occurred. NOTE: A error that occurred inside of a callback, can not be catched
 	if not(status) then
