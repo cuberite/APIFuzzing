@@ -134,9 +134,12 @@ function CheckAPI(a_API)
 						FunctionsWithParams(a_API, className, functionName, returnTypes, inputs)
 					elseif g_Code[className] ~= nil and g_Code[className][functionName] ~= nil then
 						-- Check for callback functions
-						if string.find(g_Code[className][functionName](), "g_CallbackCalled") then
+						if string.find(g_Code[className][functionName](), "g_CallbackCalled") ~= nil then
 							FunctionsWithNoParams(a_API, className, functionName, returnTypes, tbFncInfo.IsStatic)
 						end
+					elseif g_BlockEntityCallBackToBlockType[functionName] ~= nil then
+						-- DoWithBlockEntity-functions
+						FunctionsWithNoParams(a_API, className, functionName, returnTypes, tbFncInfo.IsStatic)
 					end
 				else
 					FunctionsWithNoParams(a_API, className, functionName, returnTypes, tbFncInfo.IsStatic)
