@@ -221,8 +221,15 @@ function CreateSharedIgnoreTable()
 	-- A client can ignore the disconnect packet: #3159
 	g_IgnoreShared.cClientHandle.Kick = true
 
-	-- TODO: Remove when #3985 has been merged
+	-- TODO: Remove this lines, when #3985 has been merged
 	g_IgnoreShared.cClientHandle.SetLocale = true
+	g_IgnoreShared.cEntity.SetHeight = true
+	g_IgnoreShared.cEntity.SetWidth = true
+	g_IgnoreShared.cEntity.KilledBy = true
+	g_IgnoreShared.cPawn = {}
+	g_IgnoreShared.cPawn.AddEntityEffect = true
+	g_IgnoreShared.cPawn.HasEntityEffect = true
+	g_IgnoreShared.cPawn.RemoveEntityEffect = true
 
 	-- If a invalid packet is send, the client disconnects
 	g_IgnoreShared.cPlayer.SendMessageRaw = true
