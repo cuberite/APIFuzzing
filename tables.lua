@@ -233,4 +233,7 @@ function CreateSharedIgnoreTable()
 	-- This functions are missing return types in APIDoc
 	g_IgnoreShared.cRoot.ForEachWorld = true
 	g_IgnoreShared.cRoot.ForEachPlayer = true
+
+	-- Crashes the server: #3994
+	g_IgnoreShared.cEntity.Destroy = true
 end

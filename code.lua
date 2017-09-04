@@ -10,7 +10,7 @@ function(a_FunctionName, a_ParamTypes)
 local entityID = world:SpawnBoat(1, 200, 1, cBoat.bmOak)
 world:DoWithEntityByID(entityID,
 	function(a_Entity)
-		if not(a_Entity:IsBoat()) then return end
+		g_CallbackCalled = true
 		local obj = tolua.cast(a_Entity, "cBoat")
 		GatherReturnValues(obj:%s(%s))
 	end)]],	a_FunctionName, a_ParamTypes)
@@ -54,6 +54,7 @@ function(a_FunctionName, a_ParamTypes)
 	return string.format(
 [[cRoot:Get():GetDefaultWorld():ForEachEntity(
 	function(a_Entity)
+		g_CallbackCalled = true
 		GatherReturnValues(a_Entity:%s(%s))
 		return true
 	end)]], a_FunctionName , a_ParamTypes)
@@ -69,8 +70,9 @@ function(a_FunctionName, a_ParamTypes)
 local entityID = world:SpawnExperienceOrb(1, 255, 1, 1000)
 world:DoWithEntityByID(entityID,
 	function(a_Entity)
-		local exp_orb = tolua.cast(a_Entity, "cExpOrb")
-		GatherReturnValues(exp_orb:%s(%s))
+		g_CallbackCalled = true
+		local obj = tolua.cast(a_Entity, "cExpOrb")
+		GatherReturnValues(obj:%s(%s))
 	end)]], a_FunctionName , a_ParamTypes)
 end
 
@@ -84,6 +86,7 @@ function(a_FunctionName, a_ParamTypes)
 local entityID = world:SpawnFallingBlock(1, 255, 1, 12, 1)
 world:DoWithEntityByID(entityID,
 	function(a_Entity)
+		g_CallbackCalled = true
 		local obj = tolua.cast(a_Entity, "cFallingBlock")
 		GatherReturnValues(obj:%s(%s))
 	end)]], a_FunctionName, a_ParamTypes)
@@ -120,6 +123,7 @@ function(a_FunctionName, a_ParamTypes)
 [[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
 cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
 	function(a_ChestEntity)
+		g_CallbackCalled = true
 		GatherReturnValues(a_ChestEntity:GetContents():%s(%s))
 	end)]], a_FunctionName, a_ParamTypes)
 end
@@ -132,6 +136,7 @@ function(a_FunctionName, a_ParamTypes)
 	return string.format(
 [[cRoot:Get():GetDefaultWorld():ForEachEntity(
 	function(a_Entity)
+		g_CallbackCalled = true
 		if not(a_Entity:IsMob()) then return end
 		local monster = tolua.cast(a_Entity, 'cMonster' )
 		GatherReturnValues(monster:%s(%s))
@@ -147,12 +152,12 @@ g_Code.cPickup.Class =
 function(a_FunctionName, a_ParamTypes)
 	return string.format(
 [[local world = cRoot:Get():GetDefaultWorld()
-local items = cItems() items:Add(cItem(1, 64))
-world:SpawnItemPickups(items, 1, 200, 1, 0)
-world:ForEachEntity(
+local entityID = world:SpawnItemPickup(0, 100, 0, cItem(1, 64), 0, 0, 0, 200)
+world:DoWithEntityByID(entityID,
 	function(a_Entity)
-		if not(a_Entity:IsPickup()) then return end
-		local obj = tolua.cast(a_Entity, "cPickup") GatherReturnValues(obj:%s(%s))
+		g_CallbackCalled = true
+		local obj = tolua.cast(a_Entity, "cPickup")
+		GatherReturnValues(obj:%s(%s))
 	end)
 ]],	a_FunctionName, a_ParamTypes)
 end
@@ -245,7 +250,6 @@ g_Code.cWorld.ForEachEntityInChunk =
 function()
 	return
 [[local world = cRoot:Get():GetDefaultWorld()
-world:SpawnBoat(5, 100, 5, cBoat.bmOak)
 GatherReturnValues(world:ForEachEntityInChunk(0, 0,
 	function(a_Entity)
 		g_CallbackCalled = true

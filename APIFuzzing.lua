@@ -23,6 +23,7 @@ function Initialize(a_Plugin)
 
 	cPluginManager.BindConsoleCommand("fuzzing", CmdFuzzing, " - fuzzing the api")
 	cPluginManager.BindConsoleCommand("checkapi", CmdCheckAPI, " - check the api")
+	cPluginManager:AddHook(cPluginManager.HOOK_WORLD_STARTED, MyOnWorldStarted)
 
 	-- Load and store the whole API
 	local pathClasses = table.concat({ "Plugins", "APIDump", "Classes" }, cFile:GetPathSeparator())
@@ -40,6 +41,24 @@ end
 
 function OnDisable()
 	LOG( "Disabled APIFuzzing!" )
+end
+
+
+function MyOnWorldStarted(a_World)
+	if a_World:GetName() == "world" then
+		a_World:PrepareChunk(0, 0,
+			function()
+				local items = cItems()
+				items:Add(cItem(1, 64))
+				-- Spawn pickups
+				for x = 0, 15 do
+					for z = 0, 15 do
+						-- world:SpawnBoat(5, 100, 5, cBoat.bmOak)
+						a_World:SpawnItemPickups(items, x, 100, z, 0)
+					end
+				end
+			end)
+	end
 end
 
 
@@ -185,6 +204,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	g_CallbackCalled = false
 	local bHasCallback = false
 
+	g_ReturnTypes = nil
+
 	if g_RequiresPlayer[a_ClassName] ~= nil then
 		if
 			g_RequiresPlayer[a_ClassName] == true and
@@ -213,8 +234,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 				fncTest = g_Code[a_ClassName].Class(a_FunctionName, a_ParamTypes)
 			end
 		elseif g_BlockEntityToBlockType[a_ClassName] ~= nil then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
-			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithBlockEntityAt(10, 100, 10,"
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 20, 10, ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
+			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithBlockEntityAt(10, 20, 10,"
 			fncTest = fncTest .. " function(a_BlockEntity) g_CallbackCalled = true local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_ParamTypes .. ")) end)"
 		end
