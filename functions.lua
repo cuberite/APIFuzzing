@@ -369,11 +369,11 @@ end
 
 
 
-function IsIgnored(a_ClassName, a_FunctionName)
+function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
 	-- Check if function is ignored, causes crash or is special
 	if
 		(type(g_IgnoreShared[a_ClassName]) == "table" and
-		g_IgnoreShared[a_ClassName][a_FunctionName]) or
+		g_IgnoreShared[a_ClassName][a_FunctionName] == true) or
 		g_Crashed[a_ClassName][a_FunctionName] ~= nil or
 		a_FunctionName == "constructor" or
 		a_FunctionName == "operator_div" or
@@ -383,6 +383,31 @@ function IsIgnored(a_ClassName, a_FunctionName)
 		a_FunctionName == "operator_sub"
 	then
 		return true
+	end
+
+	-- Check if function is overloaded and has params that should be ignored
+	if
+		type(g_IgnoreShared[a_ClassName]) == "table" and
+		type(g_IgnoreShared[a_ClassName][a_FunctionName]) == "table"
+	then
+		for iParams, tbParams in ipairs(a_ParamTypes) do
+			if #tbParams == #g_IgnoreShared[a_ClassName][a_FunctionName] then
+				local bAreSame = false
+				for i = 1, #tbParams do
+					if tbParams[i] == g_IgnoreShared[a_ClassName][a_FunctionName][i] then
+						bAreSame = true
+					else
+						bAreSame = false
+						break
+					end
+				end
+				if bAreSame then
+					-- This params are ignored, remove table
+					table.remove(a_ParamTypes, iParams)
+					return false
+				end
+			end
+		end
 	end
 
 	-- Check if g_Params contains the class and function name

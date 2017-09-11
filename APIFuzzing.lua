@@ -3,10 +3,12 @@ g_Ignore = {}
 g_APIDesc = {}
 g_BotName = "bot1"
 
+
+
 function Initialize(a_Plugin)
 	g_Plugin = a_Plugin
-	a_Plugin:SetName( "APIFuzzing" )
-	a_Plugin:SetVersion( 1 )
+	a_Plugin:SetName("APIFuzzing")
+	a_Plugin:SetVersion(1)
 
 	-- Random, random
 	math.randomseed(os.time())
@@ -144,8 +146,8 @@ function CheckAPI(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
-			if not(IsIgnored(className, functionName)) then
-				local paramTypes = GetParamTypes(tbFncInfo)
+			local paramTypes = GetParamTypes(tbFncInfo)
+			if not(IsIgnored(className, functionName, paramTypes)) then
 				local returnTypes = GetReturnTypes(tbFncInfo, className, functionName)
 				if paramTypes ~= nil then
 					local inputs = CreateInputs(className, functionName, paramTypes, false)

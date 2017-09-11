@@ -17,18 +17,18 @@ function CreateTables()
 
 	g_BlockEntityCallBackToBlockType = {}
 	g_BlockEntityCallBackToBlockType.DoWithBeaconAt = E_BLOCK_BEACON
-	g_BlockEntityCallBackToBlockType.DoWithDropperAt = E_BLOCK_DROPPER
-	g_BlockEntityCallBackToBlockType.DoWithDispenserAt = E_BLOCK_DISPENSER
+	g_BlockEntityCallBackToBlockType.DoWithBedAt = E_BLOCK_BED
+	g_BlockEntityCallBackToBlockType.DoWithBlockEntityAt = E_BLOCK_CHEST
 	g_BlockEntityCallBackToBlockType.DoWithBrewingstandAt = E_BLOCK_BREWING_STAND
 	g_BlockEntityCallBackToBlockType.DoWithChestAt = E_BLOCK_CHEST
-	g_BlockEntityCallBackToBlockType.DoWithNoteBlockAt = E_BLOCK_NOTE_BLOCK
 	g_BlockEntityCallBackToBlockType.DoWithCommandBlockAt = E_BLOCK_COMMAND_BLOCK
+	g_BlockEntityCallBackToBlockType.DoWithDispenserAt = E_BLOCK_DISPENSER
+	g_BlockEntityCallBackToBlockType.DoWithDropperAt = E_BLOCK_DROPPER
 	g_BlockEntityCallBackToBlockType.DoWithDropSpenserAt = E_BLOCK_DROPPER
-	g_BlockEntityCallBackToBlockType.DoWithFurnaceAt = E_BLOCK_FURNACE
 	g_BlockEntityCallBackToBlockType.DoWithFlowerPotAt = E_BLOCK_FLOWER_POT
-	g_BlockEntityCallBackToBlockType.DoWithBlockEntityAt = E_BLOCK_CHEST
-	g_BlockEntityCallBackToBlockType.DoWithBedAt = E_BLOCK_BED
+	g_BlockEntityCallBackToBlockType.DoWithFurnaceAt = E_BLOCK_FURNACE
 	g_BlockEntityCallBackToBlockType.DoWithMobHeadAt = E_BLOCK_HEAD
+	g_BlockEntityCallBackToBlockType.DoWithNoteBlockAt = E_BLOCK_NOTE_BLOCK
 
 
 	g_ObjectToTypeName = {}
@@ -41,7 +41,7 @@ function CreateTables()
 	g_ObjectToTypeName.Vector3i = "userdata"
 
 
-	-- Table containg enum type to enum value
+	-- Enum type to enum value
 	g_EnumValues = {}
 	g_EnumValues.EMCSBiome = "biSky"
 	g_EnumValues.eMonsterType = "mtBat"
@@ -55,15 +55,15 @@ function CreateTables()
 	g_RequiresPlayer.cInventory = true
 	g_RequiresPlayer.cPawn = true
 	g_RequiresPlayer.cPlayer = true
-	g_RequiresPlayer.cWorld = {}
-	g_RequiresPlayer.cWorld.DoWithPlayerByUUID = true
-	g_RequiresPlayer.cWorld.DoWithPlayer = true
-	g_RequiresPlayer.cWorld.FindAndDoWithPlayer = true
-	g_RequiresPlayer.cWorld.ForEachPlayer = true
 	g_RequiresPlayer.cRoot = {}
 	g_RequiresPlayer.cRoot.DoWithPlayerByUUID = true
 	g_RequiresPlayer.cRoot.FindAndDoWithPlayer = true
 	g_RequiresPlayer.cRoot.ForEachPlayer = true
+	g_RequiresPlayer.cWorld = {}
+	g_RequiresPlayer.cWorld.DoWithPlayer = true
+	g_RequiresPlayer.cWorld.DoWithPlayerByUUID = true
+	g_RequiresPlayer.cWorld.FindAndDoWithPlayer = true
+	g_RequiresPlayer.cWorld.ForEachPlayer = true
 
 
 	-- This list contains functions (if any) that causes false positives
@@ -87,6 +87,8 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cEntity = {}
 	g_IgnoreShared.cMonster = {}
 	g_IgnoreShared.cPlayer = {}
+	g_IgnoreShared.cPlugin = {}
+	g_IgnoreShared.cPluginLua = {}
 	g_IgnoreShared.cRoot = {}
 	g_IgnoreShared.cSplashPotionEntity = {}
 	g_IgnoreShared.cWebAdmin = {}
@@ -103,6 +105,8 @@ function CreateSharedIgnoreTable()
 	-- Deprecated
 	g_IgnoreShared.cBlockInfo.GetPlaceSound = true
 	g_IgnoreShared.cWebAdmin.GetURLEncodedString = true
+	g_IgnoreShared.cWorld.SpawnBoat = {"number", "number", "number", "cBoat#eMaterial"}
+	g_IgnoreShared.cWorld.SpawnPrimedTNT = {"number", "number", "number", "number", "number"}
 	g_IgnoreShared.cWorld.WakeUpSimulators = true
 	g_IgnoreShared.cWorld.WakeUpSimulatorsInArea = true
 	g_IgnoreShared.Globals.LOGWARN = true
@@ -191,9 +195,17 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cWindow = "*"
 
 	-- Better not
-	g_IgnoreShared.cPlugin = "*"
-	g_IgnoreShared.cPluginLua = "*"
 	g_IgnoreShared.cPluginManager = "*"
+
+	-- Don't change plugin infos
+	g_IgnoreShared.cPlugin.SetName = true
+	g_IgnoreShared.cPlugin.SetVersion = true
+	g_IgnoreShared.cPluginLua.SetName = true
+	g_IgnoreShared.cPluginLua.SetVersion = true
+
+	-- Deprecated
+	g_IgnoreShared.cPlugin.GetLocalDirectory = true
+	g_IgnoreShared.cPlugin.GetDirectory = true
 
 	-- Is checked in classes that inherit from it
 	g_IgnoreShared.cBlockEntity = "*"

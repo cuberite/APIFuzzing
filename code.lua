@@ -7,7 +7,7 @@ g_Code.cBoat.Class =
 function(a_FunctionName, a_ParamTypes)
 	return string.format(
 [[local world = cRoot:Get():GetDefaultWorld()
-local entityID = world:SpawnBoat(1, 200, 1, cBoat.bmOak)
+local entityID = world:SpawnBoat(Vector3d(1, 200, 1), cBoat.bmOak)
 world:DoWithEntityByID(entityID,
 	function(a_Entity)
 		g_CallbackCalled = true
@@ -192,7 +192,7 @@ g_Code.cWorld.DoWithEntityByID =
 function()
 	return
 [[local world = cRoot:Get():GetDefaultWorld()
-local entityID = world:SpawnBoat(1, 200, 1, cBoat.bmOak)
+local entityID = world:SpawnBoat(Vector3d(1, 200, 1), cBoat.bmOak)
 GatherReturnValues(world:DoWithEntityByID(entityID,
 	function(a_Entity)
 		g_CallbackCalled = true
@@ -237,7 +237,7 @@ g_Code.cWorld.ForEachEntityInBox =
 function()
 	return
 [[local world = cRoot:Get():GetDefaultWorld()
-world:SpawnBoat(15, 150, 15, cBoat.bmOak)
+world:SpawnBoat(Vector3d(15, 150, 15), cBoat.bmOak)
 GatherReturnValues(world:ForEachEntityInBox(
 	cBoundingBox(Vector3d(1, 60, 1), Vector3d(30, 200, 30)),
 	function(a_Entity)
@@ -274,6 +274,31 @@ function(a_ParamTypes)
 [[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_SIGN_POST, 0)
 GatherReturnValues(cRoot:Get():GetDefaultWorld():GetSignLines(10, 100, 10))]]
 end
+
+
+
+g_Code.cPlugin = {}
+g_Code.cPlugin.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[cPluginManager:Get():DoWithPlugin('Core',
+	function(a_Plugin)
+		GatherReturnValues(a_Plugin:%s(%s))
+	end)]], a_FunctionName, a_ParamTypes)
+end
+
+
+
+g_Code.cPluginLua = {}
+g_Code.cPluginLua.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[cPluginManager:Get():DoWithPlugin('Core',
+	function(a_PluginLua)
+		GatherReturnValues(a_PluginLua:%s(%s))
+	end)]], a_FunctionName, a_ParamTypes)
+end
+
 
 
 g_Code.cPluginManager = {}
