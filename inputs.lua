@@ -1,4 +1,4 @@
-function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
+function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	local inputs = {}
 
 	for _, tbParams in ipairs(a_Params) do
@@ -18,8 +18,8 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 		end
 	end
 
-	-- If we are not fuzzing. Check if a param has value nil.
-	if not(a_Fuzzing) then
+	-- If we are not fuzzing. Check if a param has value nil
+	if not(g_IsFuzzing) then
 		for i = 1,#inputs do
 			for index, param in ipairs(inputs[i]) do
 				if param == "nil" then

@@ -307,7 +307,7 @@ function GetEnumValue(a_EnumType)
 		end
 	else
 		-- Check Globals in APIDesc
-		local class = GetClass("Globals", a_EnumType)
+		local class = GetClass("Globals")
 		if class.ConstantGroups[a_EnumType] ~= nil then
 			local include = class.ConstantGroups[a_EnumType].Include
 
@@ -357,7 +357,7 @@ end
 
 
 -- Loops over the API files and searches the class
-function GetClass(a_ClassName, a_EnumType)
+function GetClass(a_ClassName)
 	for _, tbClasses in pairs(g_APIDesc) do
 		if tbClasses[a_ClassName] ~= nil then
 			return tbClasses[a_ClassName]
@@ -428,8 +428,11 @@ end
 
 
 function Abort(a_ErrorMessage)
-	local fileStop = io.open("stop.txt", "w")
-	fileStop:close()
+	-- Only create stop file in fuzzing mode
+	if g_IsFuzzing then
+		local fileStop = io.open("stop.txt", "w")
+		fileStop:close()
+	end
 
 	assert(false, a_ErrorMessage)
 end

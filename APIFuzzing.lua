@@ -2,7 +2,7 @@ g_Plugin = nil
 g_Ignore = {}
 g_APIDesc = {}
 g_BotName = "bot1"
-
+g_IsFuzzing = false
 
 
 function Initialize(a_Plugin)
@@ -68,6 +68,8 @@ function CmdCheckAPI(a_Split)
 	-- Create functions with valid params, with flag IsStatic if any
 	-- and checks the return types
 	-- Check log files and console output for warnings and errors
+
+	g_IsFuzzing = false
 	for _, entry in pairs(g_APIDesc) do
 		CheckAPI(entry)
 	end
@@ -81,6 +83,8 @@ end
 function CmdFuzzing(a_Split)
 	-- Fuzzing the functions, pass nil, different types, etc.
 	-- Check log files and console output for warnings and errors
+
+	g_IsFuzzing = true
 	for _, entry in pairs(g_APIDesc) do
 		RunFuzzing(entry)
 	end
@@ -118,11 +122,11 @@ function RunFuzzing(a_API)
 			local inputs
 			local params = GetParamTypes(tbFncInfo, functionName)
 			if params ~= nil then
-				inputs = CreateInputs(className, functionName, params, true)
+				inputs = CreateInputs(className, functionName, params)
 			end
 
 			if not(IsIgnored(className, functionName)) then
-				FunctionsWithParams(a_API, className, functionName, nil, inputs, true)
+				FunctionsWithParams(a_API, className, functionName, nil, inputs)
 			end
 		end
 	end
@@ -150,7 +154,7 @@ function CheckAPI(a_API)
 			if not(IsIgnored(className, functionName, paramTypes)) then
 				local returnTypes = GetReturnTypes(tbFncInfo, className, functionName)
 				if paramTypes ~= nil then
-					local inputs = CreateInputs(className, functionName, paramTypes, false)
+					local inputs = CreateInputs(className, functionName, paramTypes)
 					if inputs ~= nil then
 						FunctionsWithParams(a_API, className, functionName, returnTypes, inputs)
 					elseif g_Code[className] ~= nil and g_Code[className][functionName] ~= nil then
@@ -183,21 +187,21 @@ end
 
 
 
-function FunctionsWithParams(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Inputs, a_IsFuzzing)
+function FunctionsWithParams(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Inputs)
 	for index, input in ipairs(a_Inputs) do
 		local isStatic = input.IsStatic or false
 		local paramTypes = table.concat(input, ", ")
 		if a_ReturnTypes ~= nil then
-			TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes[index], paramTypes, isStatic, a_IsFuzzing)
+			TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes[index], paramTypes, isStatic)
 		else
-			TestFunction(a_API, a_ClassName, a_FunctionName, nil, paramTypes, isStatic, a_IsFuzzing)
+			TestFunction(a_API, a_ClassName, a_FunctionName, nil, paramTypes, isStatic)
 		end
 	end
 end
 
 
 
-function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_ParamTypes, a_IsStatic, a_IsFuzzing)
+function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_ParamTypes, a_IsStatic)
 	local fncTest = ""
 
 	-- Used for function that requires a callback function
@@ -293,7 +297,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		Abort("Runtime of plugin stopped, because of syntax error.")
 	end
 
-	if a_IsFuzzing then
+	if g_IsFuzzing then
 		 -- Save class name, function and params, in case of a crash
 		 fncTest = ReplaceString(ReplaceString(fncTest, "\n", ""), "\t", " ")
 		 SaveCurrentTest(a_ClassName, a_FunctionName, fncTest)
