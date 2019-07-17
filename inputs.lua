@@ -234,6 +234,8 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 			inputs[index] = "nil"
 		elseif param == "<unknown>" then  -- TODO
 			inputs[index] = "nil"
+		elseif param == "cCraftingGrid" then
+			inputs[index] = "nil"
 		end
 
 		if inputs[index] == nil then

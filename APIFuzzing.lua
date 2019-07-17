@@ -25,7 +25,9 @@ function Initialize(a_Plugin)
 
 	cPluginManager.BindConsoleCommand("fuzzing", CmdFuzzing, " - fuzzing the api")
 	cPluginManager.BindConsoleCommand("checkapi", CmdCheckAPI, " - check the api")
-	cPluginManager:AddHook(cPluginManager.HOOK_WORLD_STARTED, MyOnWorldStarted)
+
+	-- Disabled for now
+	-- cPluginManager:AddHook(cPluginManager.HOOK_WORLD_STARTED, MyOnWorldStarted)
 
 	-- Load and store the whole API
 	local pathClasses = table.concat({ "Plugins", "APIDump", "Classes" }, cFile:GetPathSeparator())
@@ -119,14 +121,12 @@ function RunFuzzing(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
-			local inputs
 			local params = GetParamTypes(tbFncInfo, functionName)
 			if params ~= nil then
-				inputs = CreateInputs(className, functionName, params)
-			end
-
-			if not(IsIgnored(className, functionName)) then
-				FunctionsWithParams(a_API, className, functionName, nil, inputs)
+				local inputs = CreateInputs(className, functionName, params)
+				if inputs ~= nil and not(IsIgnored(className, functionName, params)) then
+					FunctionsWithParams(a_API, className, functionName, nil, inputs)
+				end
 			end
 		end
 	end
