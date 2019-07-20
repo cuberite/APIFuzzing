@@ -112,6 +112,13 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.Globals.LOGWARN = true
 	g_IgnoreShared.Globals.md5 = true
 	g_IgnoreShared.Globals.StringToMobType = true
+	g_IgnoreShared.cPlugin.GetLocalDirectory = true
+	g_IgnoreShared.cPlugin.GetDirectory = true
+	g_IgnoreShared.cEntity.IsSwimming = true
+	g_IgnoreShared.cEntity.IsSubmerged = true
+	g_IgnoreShared.cClientHandle.SendSoundEffect = true
+	g_IgnoreShared.cWorld.CastThunderbolt = true
+	g_IgnoreShared.cBlockInfo.Get = true
 
 	-- Outputs to console, ignore it
 	g_IgnoreShared.cRoot.QueueExecuteConsoleCommand = true
@@ -202,10 +209,6 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cPlugin.SetVersion = true
 	g_IgnoreShared.cPluginLua.SetName = true
 	g_IgnoreShared.cPluginLua.SetVersion = true
-
-	-- Deprecated
-	g_IgnoreShared.cPlugin.GetLocalDirectory = true
-	g_IgnoreShared.cPlugin.GetDirectory = true
 
 	-- Is checked in classes that inherit from it
 	g_IgnoreShared.cBlockEntity = "*"
