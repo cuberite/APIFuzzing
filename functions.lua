@@ -370,6 +370,10 @@ end
 
 
 function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
+	if g_IgnoreShared[a_ClassName] == "*" then
+		return true
+	end
+
 	-- Check if function is ignored, causes crash or is special
 	if
 		(type(g_IgnoreShared[a_ClassName]) == "table" and
