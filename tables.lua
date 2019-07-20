@@ -245,4 +245,8 @@ function CreateSharedIgnoreTable()
 	-- This functions are missing return types in APIDoc
 	g_IgnoreShared.cRoot.ForEachWorld = true
 	g_IgnoreShared.cRoot.ForEachPlayer = true
+
+	-- Function only accepts a cUUID instance not a UUID string
+	g_IgnoreShared.cWorld.DoWithPlayerByUUID = true
+	g_IgnoreShared.cRoot.DoWithPlayerByUUID = true
 end

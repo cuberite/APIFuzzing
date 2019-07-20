@@ -125,7 +125,7 @@ g_Params.cPluginManager.ForEachPlugin =
 g_Params.cRoot = {}
 g_Params.cRoot.DoWithPlayerByUUID =
 {
-	"cUUID:GenerateVersion3(g_BotName)",
+	"g_BotUUID",
 	"function(a_Player) g_CallbackCalled = true end"
 }
 
@@ -150,7 +150,7 @@ g_Params.cWorld.DoWithPlayer =
 }
 g_Params.cWorld.DoWithPlayerByUUID =
 {
-	"cUUID:GenerateVersion3(g_BotName)",
+	"g_BotUUID",
 	"function() g_CallbackCalled = true end"
 }
 

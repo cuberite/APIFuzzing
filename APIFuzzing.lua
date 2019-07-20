@@ -2,6 +2,7 @@ g_Plugin = nil
 g_Ignore = {}
 g_APIDesc = {}
 g_BotName = "bot1"
+g_BotUUID = "<UUID of the bot>"
 g_IsFuzzing = false
 
 
@@ -46,6 +47,7 @@ end
 function OnDisable()
 	LOG( "Disabled APIFuzzing!" )
 end
+
 
 
 function MyOnWorldStarted(a_World)
