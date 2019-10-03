@@ -1,7 +1,51 @@
 -- Contains valid params for functions
 
-
 g_Params = {}
+
+
+g_Params.cBlockArea = {}
+g_Params.cBlockArea.Write =
+function(a_Params)
+	if #a_Params == 2 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"Vector3i(0, 0, 0)"
+		}
+	elseif #a_Params == 3 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"Vector3i(0, 0, 0)",
+			"3"
+		}
+	elseif #a_Params == 4 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"0", "0", "0"
+		}
+	elseif #a_Params == 5 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"0", "0", "0",
+			"3"
+		}
+	end
+	return a_Params
+end
+
+g_Params.cBlockArea.DoWithBlockEntityAt =
+function(a_Params)
+	if #a_Params == 2 then
+		return { "1", "1", "1", "function(a_BlockEntity) return true end" }
+	elseif #a_Params == 4 then
+		return { "Vector3i(1, 1, 1)", "function(a_BlockEntity) return true end" }
+	end
+end
+
+g_Params.cBlockArea.DoWithBlockEntityRelAt = g_Params.cBlockArea.DoWithBlockEntityAt
 
 
 

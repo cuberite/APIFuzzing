@@ -2,8 +2,10 @@ g_Plugin = nil
 g_Ignore = {}
 g_APIDesc = {}
 g_BotName = "bot1"
-g_BotUUID = "<UUID of the bot>"
+g_BotUUID = nil
 g_IsFuzzing = false
+g_Infinity = nil
+g_Object = nil
 
 
 function Initialize(a_Plugin)
@@ -14,6 +16,12 @@ function Initialize(a_Plugin)
 	-- Random, random
 	math.randomseed(os.time())
 	math.random(); math.random(); math.random()
+
+	local tbCollect = {}
+	for i = 0, 300000 do
+		table.insert(tbCollect, "infinity")
+	end
+	g_Infinity = table.concat(tbCollect)
 
 	-- Create and load tables
 	CreateTables()
@@ -26,9 +34,11 @@ function Initialize(a_Plugin)
 
 	cPluginManager.BindConsoleCommand("fuzzing", CmdFuzzing, " - fuzzing the api")
 	cPluginManager.BindConsoleCommand("checkapi", CmdCheckAPI, " - check the api")
+	cPluginManager.BindConsoleCommand("info", CmdAPIInfo, " - check the api")
+	cPluginManager.BindConsoleCommand("checkhook", CmdAPICheckHook, " - test a hook")
 
-	-- Disabled for now
 	-- cPluginManager:AddHook(cPluginManager.HOOK_WORLD_STARTED, MyOnWorldStarted)
+	cPluginManager:AddHook(cPluginManager.HOOK_PLAYER_SPAWNED, MyOnPlayerSpawned)
 
 	-- Load and store the whole API
 	local pathClasses = table.concat({ "Plugins", "APIDump", "Classes" }, cFile:GetPathSeparator())
@@ -39,6 +49,7 @@ function Initialize(a_Plugin)
 	end
 	g_APIDesc["APIDesc.lua"] = loadfile(pathAPIDesc)().Classes
 
+	LOG( "Initialising APIFuzzing v.1" )
 	return true
 end
 
@@ -48,6 +59,29 @@ function OnDisable()
 	LOG( "Disabled APIFuzzing!" )
 end
 
+
+function CmdAPICheckHook(a_Split)
+	-- g_IsFuzzing = true
+	local world = cRoot:Get():GetDefaultWorld()
+	world:RegenerateChunk(0, 0)
+
+	cPluginManager:AddHook(cPluginManager.HOOK_CHUNK_GENERATING,
+		function(a_World, a_ChunkX, a_ChunkZ, a_ChunkDesc)
+			g_Object = a_ChunkDesc
+			CheckAPI({ ["cChunkDesc"] = GetClass("cChunkDesc") })
+		end)
+
+	LOG("All functions call are done.");
+	return true
+end
+
+
+
+function MyOnPlayerSpawned(a_Player)
+	if a_Player:GetName() == g_BotName then
+		g_BotUUID = a_Player:GetUUID()
+	end
+end
 
 
 function MyOnWorldStarted(a_World)
@@ -66,6 +100,43 @@ function MyOnWorldStarted(a_World)
 			end)
 	end
 end
+
+
+
+function CheckIfVector(a_ClassName, a_FunctionName, a_ParamTypes, a_Inputs)
+	print(a_ClassName, a_FunctionName)
+	for index, arr in ipairs(a_ParamTypes) do
+		for i = 1, #arr do
+			print(arr[i], a_Inputs[index][i])
+		end
+	end
+	return true
+end
+
+
+
+function CmdAPIInfo(a_Split)
+	for _, entry in pairs(g_APIDesc) do
+		for className, tbFunctions in pairs(entry) do
+			for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
+				local paramTypes = GetParamTypes(tbFncInfo, functionName)
+				if paramTypes ~= nil then
+					local inputs = CreateInputs(className, functionName, paramTypes)
+					if not(IsIgnored(className, functionName, paramTypes)) and
+						inputs ~= nil and CheckIfVector(className, functionName, paramTypes, inputs) then
+						--print("paramTypes", paramTypes)
+						assert(false)
+					end
+				end
+			end
+		end
+	end
+
+	-- cRoot:Get():GetDefaultWorld():FastSetBlock(1, 200, 1, 1, 0)
+	print("called")
+	return true
+end
+
 
 
 function CmdCheckAPI(a_Split)
@@ -123,10 +194,10 @@ function RunFuzzing(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
-			local params = GetParamTypes(tbFncInfo, functionName)
-			if params ~= nil then
-				local inputs = CreateInputs(className, functionName, params)
-				if inputs ~= nil and not(IsIgnored(className, functionName, params)) then
+			local paramTypes = GetParamTypes(tbFncInfo, functionName)
+			if paramTypes ~= nil then
+				local inputs = CreateInputs(className, functionName, paramTypes)
+				if inputs ~= nil and not(IsIgnored(className, functionName, paramTypes)) then
 					FunctionsWithParams(a_API, className, functionName, nil, inputs)
 				end
 			end
@@ -231,13 +302,14 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	end
 
 	if not(a_IsStatic) then
-		if g_BlockEntityCallBackToBlockType[a_FunctionName] ~= nil then
+		-- TODO: Fix that...
+		if a_ClassName ~= "cBlockArea" and g_BlockEntityCallBackToBlockType[a_FunctionName] ~= nil then
 			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityCallBackToBlockType[a_FunctionName] ..", 0)"
 			fncTest = fncTest .. " GatherReturnValues(cRoot:Get():GetDefaultWorld():".. a_FunctionName .. "(10, 100, 10,"
 			fncTest = fncTest .. "function(a_BlockEntity) g_CallbackCalled = true end))"
 		elseif g_Code[a_ClassName] ~= nil then
 			if g_Code[a_ClassName][a_FunctionName] ~= nil then
-				fncTest = g_Code[a_ClassName][a_FunctionName](a_ParamTypes)
+				fncTest = g_Code[a_ClassName][a_FunctionName](a_FunctionName)
 			else
 				fncTest = g_Code[a_ClassName].Class(a_FunctionName, a_ParamTypes)
 			end
@@ -280,6 +352,13 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		end
 		fncTest = fncTest .."(" .. a_ParamTypes .. "))"
 	end
+
+	-- print(fncTest)
+	-- print(a_ParamTypes)
+
+	-- if 1 == 1 then
+	-- 	return
+	-- end
 
 	if fncTest == "" then
 		Abort(string.format("Not handled: %s, %s", a_ClassName, a_FunctionName))
@@ -352,8 +431,9 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	-- Check the return types
 	-- NOTE: There can be false positives. For example for function GetSignLines from cWorld.
 	-- If the block is not a sign it will correctly return 1 value instead of the expected 5.
+
 	-- Currently two ideas:
-	-- 1) Improve the test code. For example for the sign, place a sign before the call will be made
+	-- 1) Improve the test code by adding code in file code.lua. For example for the sign, place a sign before the call will be made
 	-- 2) If it's to complex, add the class and function to table g_FalsePositives in tables.lua
 
 	if g_FalsePositives[a_ClassName] ~= nil and g_FalsePositives[a_ClassName][a_FunctionName] == true  then
@@ -366,6 +446,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	local catched = false
 	if g_ReturnTypes ~= nil and a_ReturnTypes ~= nil then
 		if #g_ReturnTypes ~= #a_ReturnTypes then
+			-- Amount of return types doesn't match
 			catched = true
 			retGot = table.concat(g_ReturnTypes, ", ")
 			retAPIDoc = table.concat(ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes), ", ")
@@ -375,13 +456,16 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 			retAPIDoc = table.concat(ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes), ", ")
 			-- Same amount, check if return types are equal
 			if retGot ~= retAPIDoc then
+				-- Return types doesn't match
 				catched = true
 			end
 		end
 	elseif g_ReturnTypes == nil and a_ReturnTypes ~= nil then
+		-- Return types doesn't match
 		catched = true
 		retAPIDoc = table.concat(ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes), ", ")
 	elseif g_ReturnTypes ~= nil and a_ReturnTypes == nil then
+		-- Return types doesn't match
 		catched = true
 		retGot = table.concat(g_ReturnTypes, ", ")
 	end

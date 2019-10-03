@@ -1,5 +1,3 @@
-
-
 -- Finds out the type of the return types
 function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 	local ret = {}
@@ -105,11 +103,15 @@ end
 
 
 -- Saves current class name, function name and params
-function SaveCurrentTest(a_ClassName, a_FunctionName, a_FunctionAndParams)
+function SaveCurrentTest(a_ClassName, a_FunctionName, a_FunctionAndParams)  -- TODO
 	local fileCurrent = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "current.txt", "w")
 	fileCurrent:write(a_ClassName, "\n")
 	fileCurrent:write(a_FunctionName, "\n")
-	fileCurrent:write(a_FunctionAndParams, "\n")
+	if a_FunctionAndParams:len() > 10000 then
+		fileCurrent:write("infinity", "\n")
+	else
+		fileCurrent:write(a_FunctionAndParams, "\n")
+	end
 	fileCurrent:close()
 end
 
@@ -386,6 +388,11 @@ function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
 		a_FunctionName == "operator_plus" or
 		a_FunctionName == "operator_sub"
 	then
+		return true
+	end
+
+	-- Check table g_Ignore. TODO: Needs to be corrected, problem with overloaded functions
+	if g_IsFuzzing and g_Ignore[a_ClassName] ~= nil and g_Ignore[a_ClassName][a_FunctionName] ~= nil then
 		return true
 	end
 

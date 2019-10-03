@@ -79,12 +79,16 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared = {}
 
 	-- ## Initialize tables ##
+	g_IgnoreShared.cBlockArea = {}
 	g_IgnoreShared.cBlockInfo = {}
+	g_IgnoreShared.cBoat =  {}
+	g_IgnoreShared.cChunkDesc = {}
 	g_IgnoreShared.cClientHandle = {}
 	g_IgnoreShared.cCompositeChat = {}
 	g_IgnoreShared.cDispenserEntity = {}
 	g_IgnoreShared.cDropSpenserEntity = {}
 	g_IgnoreShared.cEntity = {}
+	g_IgnoreShared.Globals = {}
 	g_IgnoreShared.cMonster = {}
 	g_IgnoreShared.cPlayer = {}
 	g_IgnoreShared.cPlugin = {}
@@ -93,7 +97,6 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cSplashPotionEntity = {}
 	g_IgnoreShared.cWebAdmin = {}
 	g_IgnoreShared.cWorld = {}
-	g_IgnoreShared.Globals = {}
 
 
 	-- ## Ignore a single or more functions ##
@@ -102,7 +105,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cCompositeChat.AddShowAchievementPart = true
 	g_IgnoreShared.cDispenserEntity.SpawnProjectileFromDispenser = true
 
-	-- Deprecated
+	-- Deprecated. TODO: Only ignore the functions that have numbers
 	g_IgnoreShared.cBlockInfo.GetPlaceSound = true
 	g_IgnoreShared.cWebAdmin.GetURLEncodedString = true
 	g_IgnoreShared.cWorld.SpawnBoat = {"number", "number", "number", "cBoat#eMaterial"}
@@ -119,6 +122,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cClientHandle.SendSoundEffect = true
 	g_IgnoreShared.cWorld.CastThunderbolt = true
 	g_IgnoreShared.cBlockInfo.Get = true
+	g_IgnoreShared.cWorld.BroadcastSoundEffect = true
 
 	-- Outputs to console, ignore it
 	g_IgnoreShared.cRoot.QueueExecuteConsoleCommand = true
@@ -130,18 +134,31 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.Globals.LOGINFO = true
 	g_IgnoreShared.Globals.LOGWARNING = true
 
-	-- Discussion in process #3651, #3649
-	g_IgnoreShared.cEntity.MoveToWorld = true
-	g_IgnoreShared.cEntity.ScheduleMoveToWorld = true
-
-	-- Crashes the server
-	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- #3662
-
 	-- Needs an monster as param
 	g_IgnoreShared.cMonster.GetLeashedTo = true
 
 	-- Requires score board, it's in rework: #3953
 	g_IgnoreShared.cPlayer.GetTeam = true
+
+	-- Don't change plugin infos
+	g_IgnoreShared.cPlugin.SetName = true
+	g_IgnoreShared.cPlugin.SetVersion = true
+	g_IgnoreShared.cPluginLua.SetName = true
+	g_IgnoreShared.cPluginLua.SetVersion = true
+
+	-- If a invalid packet is send, the client disconnects
+	g_IgnoreShared.cPlayer.SendMessageRaw = true
+
+	-- This causes problem for fuzzing / checkapi, as the client name is hardcoded
+	g_IgnoreShared.cPlayer.SetName = true
+
+	-- Needs special handling
+	g_IgnoreShared.cBlockArea.Create = true
+	g_IgnoreShared.cBlockArea.DumpToRawFile = true
+	g_IgnoreShared.cBlockArea.LoadFromSchematicFile = true
+	g_IgnoreShared.cBlockArea.LoadFromSchematicString = true
+	g_IgnoreShared.cBlockArea.SaveToSchematicFile = true
+
 
 
 	-- ## Whole class ignored ##
@@ -159,14 +176,10 @@ function CreateSharedIgnoreTable()
 	-- Database
 	g_IgnoreShared.sqlite3 = "*"
 
-	-- Can write out of bounds and corrupts memory, this could then lead to a crash
-	g_IgnoreShared.cBlockArea = "*"
-
 	-- Has only function SetFuseTicks with param number
 	g_IgnoreShared.cTNTEntity = "*"
 
 	-- Needs a hook to access the objects
-	g_IgnoreShared.cChunkDesc = "*"
 	g_IgnoreShared.cCraftingRecipe = "*"
 
 	-- Requires cChunkDesc
@@ -198,17 +211,11 @@ function CreateSharedIgnoreTable()
 	-- Contains callbacks
 	g_IgnoreShared.lxp = "*"
 
-	-- Is cLuaWindow
+	-- Checked in cLuaWindow
 	g_IgnoreShared.cWindow = "*"
 
 	-- Better not
 	g_IgnoreShared.cPluginManager = "*"
-
-	-- Don't change plugin infos
-	g_IgnoreShared.cPlugin.SetName = true
-	g_IgnoreShared.cPlugin.SetVersion = true
-	g_IgnoreShared.cPluginLua.SetName = true
-	g_IgnoreShared.cPluginLua.SetVersion = true
 
 	-- Is checked in classes that inherit from it
 	g_IgnoreShared.cBlockEntity = "*"
@@ -232,21 +239,54 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cFile = "*"
 	g_IgnoreShared.cIniFile = "*"
 
-	-- This function doesn't work correctly.
-	-- A client can ignore the disconnect packet: #3159
-	g_IgnoreShared.cClientHandle.Kick = true
 
-	-- If a invalid packet is send, the client disconnects
-	g_IgnoreShared.cPlayer.SendMessageRaw = true
 
-	-- This causes problem for fuzzing / checkapi, as the client name is hardcoded
-	g_IgnoreShared.cPlayer.SetName = true
+	-- This has to be fixed in cuberite or in APIDoc
 
 	-- This functions are missing return types in APIDoc
 	g_IgnoreShared.cRoot.ForEachWorld = true
 	g_IgnoreShared.cRoot.ForEachPlayer = true
 
-	-- Function only accepts a cUUID instance not a UUID string
+	-- Param only accepts a cUUID instance not a UUID string
 	g_IgnoreShared.cWorld.DoWithPlayerByUUID = true
 	g_IgnoreShared.cRoot.DoWithPlayerByUUID = true
+
+	-- Got number; APIDoc: table
+	g_IgnoreShared.cWorld.SpawnSplitExperienceOrbs = true
+
+	-- Got = nil; APIDoc = number, number, number
+	g_IgnoreShared.cDropSpenserEntity.AddDropSpenserDir = true
+
+	-- This functions don't accept Vector3i, but should be able
+	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
+	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
+
+
+
+	-- Ths functions causes the server to crash
+	g_IgnoreShared.Globals.ClickActionToString = true
+
+	g_IgnoreShared.cBoat.MaterialToItem = true
+	g_IgnoreShared.cBoat.MaterialToString = true
+
+	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- #3662
+
+	-- Expand(-5425, 1, 1, 1, 1, 1)
+	g_IgnoreShared.cBlockArea.Expand = true
+	-- Crop(1, 1, -9170, 1, 1, 1)
+	g_IgnoreShared.cBlockArea.Crop = true
+
+	-- Has functions causing the server to crash
+	g_IgnoreShared.cChunkDesc = "*"
+
+	-- This functions doesn't exists in cuberite
+	-- g_IgnoreShared.cChunkDesc.IsUsingDefaultStructures = true
+	-- g_IgnoreShared.cChunkDesc.SetUseDefaultStructures = true
+
+	-- A big number, will overload / deadlock the server
+	g_IgnoreShared.cWorld.DoExplosionAt = true
+
+	-- Discussion in process #3651, #3649
+	g_IgnoreShared.cEntity.MoveToWorld = true
+	g_IgnoreShared.cEntity.ScheduleMoveToWorld = true
 end

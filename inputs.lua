@@ -48,96 +48,51 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 		return inputs
 	end
 
-	-- Replace params from right to left with nil
-	local r = #inputs[1]
-	for amount = 1, #inputs[1] do
-		table.insert(inputs, CopyTable(inputs[1], inputs[1].IsStatic))
+	CreateAndFill(inputs, "nil")
+	CreateAndFill(inputs, "true")
+	CreateAndFill(inputs, "false")
+	CreateAndFill(inputs, E_BLOCK_STONE_BRICKS)
+	CreateAndFill(inputs, E_ITEM_BED)
+	CreateAndFill(inputs, 1)
 
-		for i = r, #a_Params do
-			inputs[#inputs][i] = "nil"
-		end
-		r = r - 1
-	end
+	-- Don't use this two params. Using them will always crash the server
+	-- CreateAndFill(inputs, "'nan'")
+	-- CreateAndFill(inputs, "'infinity'")
 
-	local tmp = {}
-	local hasNumber = false
-	-- Add negative and positive numbers
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = -10000
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		hasNumber = false
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = 10000
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		hasNumber = false
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	-- Add block types, item types
-	tmp = {}
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = E_BLOCK_STONE_BRICKS
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		hasNumber = false
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = E_ITEM_BED
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		tmp[i] = E_ITEM_BED
-	end
-	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
+	CreateAndFill(inputs, "'" .. g_Infinity .. "'")
+	CreateAndFill(inputs, "{}")
 
 	for _ = 1, 10 do
-		tmp = {}
-		for i = 1, #a_Params do
-			tmp[i] = math.random(-10000, 10000)
-		end
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
+		CreateAndFill(inputs, math.random(-10000, 10000))
 	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		tmp[i] = 1
-	end
-	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
 
 	return inputs
+end
+
+
+
+function CreateAndFill(a_Output, a_Input)
+	local r = 1
+	for amount = 1, #a_Output[1] do
+		local val = a_Output[1][r]
+		a_Output[1][r] = a_Input
+		table.insert(a_Output, CopyTable(a_Output[1], a_Output[1].IsStatic))
+
+		-- Restore
+		a_Output[1][r] = val
+		r = r + 1
+	end
+
+	local r = #a_Output[1]
+	for amount = 1, #a_Output[1] do
+		local val = a_Output[#a_Output][r]
+		a_Output[#a_Output][r] = a_Input
+		table.insert(a_Output, CopyTable(a_Output[1], a_Output[1].IsStatic))
+
+		-- Restore
+		a_Output[#a_Output][r] = val
+		r = r - 1
+	end
 end
 
 

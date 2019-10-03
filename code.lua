@@ -2,6 +2,18 @@ g_Code = {}
 
 
 
+g_Code.cBlockArea = {}
+g_Code.cBlockArea.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[local obj = cBlockArea()
+obj:Create(10, 10, 10, 47)
+GatherReturnValues(obj:%s(%s))
+]],	a_FunctionName, a_ParamTypes)
+end
+
+
+
 g_Code.cBoat = {}
 g_Code.cBoat.Class =
 function(a_FunctionName, a_ParamTypes)
@@ -34,6 +46,17 @@ end
 
 
 
+g_Code.cChunkDesc = {}
+g_Code.cChunkDesc.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[local obj = g_Object
+GatherReturnValues(obj:%s(%s))]], a_FunctionName , a_ParamTypes)
+
+end
+
+
+
 g_Code.cClientHandle = {}
 g_Code.cClientHandle.Class =
 function(a_FunctionName, a_ParamTypes)
@@ -44,6 +67,16 @@ world:DoWithPlayer('%s',
 		g_CallbackCalled = true
 		GatherReturnValues(a_Player:GetClientHandle():%s(%s))
 	end)]], g_BotName, a_FunctionName, a_ParamTypes)
+end
+
+
+
+g_Code.cCraftingRecipe = {}
+g_Code.cCraftingRecipe.Class =
+function(a_FunctionName, a_ParamTypes)
+	return string.format(
+[[local obj = g_Object
+GatherReturnValues(obj:%s(%s))]], a_FunctionName , a_ParamTypes)
 end
 
 

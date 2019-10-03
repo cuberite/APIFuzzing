@@ -30,6 +30,8 @@ Start the server and run the console command `checkapi`. The plugin will be fini
 
 ### Features
 * It can catch:
-* - Syntax errors, indicates a problem in code generation of plugin
-* - Runtime errors, function doesn't exists, is not exported or flag IsStatic is missing in APIDoc
-* It checks the return types of the function call with the APIDoc
+* - Syntax errors, indicates a problem in code generation of this plugin
+* - Incorrect parameters in APIDoc or not documented
+* - Function exists in the API, but is not exported or doesn't exists
+* - Function is missing flag IsStatic in APIDoc
+* It can also compare the return types of the function call with the APIDoc
