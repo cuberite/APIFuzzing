@@ -7,6 +7,8 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 			LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
 			Abort("Got nil, expected a table!")
 		end
+		local key = table.concat(tbParams, ", ")
+		tbTemp.key = key
 		table.insert(inputs, tbTemp)
 	end
 
@@ -48,55 +50,50 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 		return inputs
 	end
 
-	CreateAndFill(inputs, "nil")
-	CreateAndFill(inputs, "true")
-	CreateAndFill(inputs, "false")
-	CreateAndFill(inputs, E_BLOCK_STONE_BRICKS)
-	CreateAndFill(inputs, E_ITEM_BED)
-	CreateAndFill(inputs, 1)
-	CreateAndFill(inputs, "{}")
-	-- CreateAndFill(inputs, "'" .. g_Infinity .. "'")
+	local tbRes = {}
+	for _, tb in ipairs(inputs) do
+		table.insert(tbRes, CopyTable(tb))
+	end
+
+	CreateAndFill(inputs, "nil", tbRes)
+	CreateAndFill(inputs, "true", tbRes)
+	CreateAndFill(inputs, "false", tbRes)
+	CreateAndFill(inputs, E_BLOCK_STONE_BRICKS, tbRes)
+	CreateAndFill(inputs, E_ITEM_BED,tbRes)
+	CreateAndFill(inputs, 1, tbRes)
+	CreateAndFill(inputs, "{}", tbRes)
+	CreateAndFill(inputs, "\"\"", tbRes)
+	CreateAndFill(inputs, "'" .. g_Infinity .. "'", tbRes)
 
 	-- Don't use this two params. Using them will always crash the server
-	-- CreateAndFill(inputs, "'nan'")
-	-- CreateAndFill(inputs, "'infinity'")
+	-- CreateAndFill(inputs, "'nan'", tbRes)
+	-- CreateAndFill(inputs, "'infinity'", tbRes)
 
 	-- This params will overload the chunk generator and can cause false positives due to a deadlock
 	-- for _ = 1, 10 do
-	-- 	CreateAndFill(inputs, math.random(-10000, 10000))
+	-- 	CreateAndFill(inputs, math.random(-10000, 10000), tbRes)
 	-- end
 
 	-- Testing this params can take a long time
 	-- for i = -100, 100 do
-	-- 	CreateAndFill(inputs, i)
+	-- 	CreateAndFill(inputs, i, tbRes)
 	-- end
 
-	return inputs
+	return tbRes
 end
 
 
 
-function CreateAndFill(a_Output, a_Input)
-	local r = 1
-	for amount = 1, #a_Output[1] do
-		local val = a_Output[1][r]
-		a_Output[1][r] = a_Input
-		table.insert(a_Output, CopyTable(a_Output[1], a_Output[1].IsStatic))
-
-		-- Restore
-		a_Output[1][r] = val
-		r = r + 1
-	end
-
-	r = #a_Output[1]
-	for amount = 1, #a_Output[1] do
-		local val = a_Output[#a_Output][r]
-		a_Output[#a_Output][r] = a_Input
-		table.insert(a_Output, CopyTable(a_Output[1], a_Output[1].IsStatic))
-
-		-- Restore
-		a_Output[#a_Output][r] = val
-		r = r - 1
+function CreateAndFill(a_Inputs, a_Value, a_Output)
+	-- local tbRes = {}
+	for _, tbInput in ipairs(a_Inputs) do
+		local tmp = tbInput
+		for i = 1, #tmp do
+			local val = tmp[i]
+			tmp[i] = a_Value
+			table.insert(a_Output, CopyTable(tmp))
+			tmp[i] = val
+		end
 	end
 end
 

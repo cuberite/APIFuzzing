@@ -55,14 +55,13 @@ end
 
 
 
-function CopyTable(a_Source, a_IsStatic)
+function CopyTable(a_Source)
 	local tmp = {}
-	for i = 1, #a_Source do
-		tmp[i] = a_Source[i]
+
+	for key, value in pairs(a_Source) do
+		tmp[key] = value
 	end
-	if a_IsStatic then
-		tmp.IsStatic = true
-	end
+
 	return tmp
 end
 
@@ -90,6 +89,7 @@ function CheckIfCrashed()
 		if g_Ignore[className] == nil then
 			g_Ignore[className] = {}
 		end
+		-- TODO
 		g_Ignore[className][functionName] = nil
 
 	end
@@ -142,13 +142,15 @@ function SaveTableIgnore()
 	for className, tbFunctions in pairs(g_Ignore) do
 		local s = "\t" .. className .. " =\n\t{\n"
 		local writeIt = false
-		if tbFunctions ~= "*" then
-			for functionName, _ in pairs(tbFunctions) do
+		for functionName, tbKeys in pairs(tbFunctions) do
+			s = s .. "\t\t" .. functionName .. " =\n\t\t{\n"
+			for key, _ in pairs(tbKeys) do
 				writeIt = true
-				s = s .. "\t\t" .. functionName .. " = true,\n"
+				s = s .. "\t\t\t[ \"" .. key .. "\" ] = true,\n"
 			end
-			s = s .. "\t},\n"
+			s = s .. "\t\t},\n"
 		end
+		s = s .. "\t},\n"
 		if writeIt then
 			fileIgnore:write(s)
 		end
@@ -417,32 +419,21 @@ function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
 		return true
 	end
 
-	-- Check table g_Ignore. TODO: Needs to be corrected, problem with overloaded functions
-	if g_IsFuzzing and g_Ignore[a_ClassName] ~= nil and g_Ignore[a_ClassName][a_FunctionName] ~= nil then
-		return true
-	end
+	-- Check table g_Ignore
+	if g_IsFuzzing then
+		if
+			g_Ignore[a_ClassName] ~= nil and
+			g_Ignore[a_ClassName][a_FunctionName] ~= nil
+		then
+			for index = #a_ParamTypes, 1, -1 do
+				local key = table.concat(a_ParamTypes[index], ", ")
+				if g_Ignore[a_ClassName][a_FunctionName][key] then
+					table.remove(a_ParamTypes, index)
+				end
+			end
 
-	-- Check if function is overloaded and has params that should be ignored
-	if
-		type(g_IgnoreShared[a_ClassName]) == "table" and
-		type(g_IgnoreShared[a_ClassName][a_FunctionName]) == "table"
-	then
-		for iParams, tbParams in ipairs(a_ParamTypes) do
-			if #tbParams == #g_IgnoreShared[a_ClassName][a_FunctionName] then
-				local bAreSame = false
-				for i = 1, #tbParams do
-					if tbParams[i] == g_IgnoreShared[a_ClassName][a_FunctionName][i] then
-						bAreSame = true
-					else
-						bAreSame = false
-						break
-					end
-				end
-				if bAreSame then
-					-- This params are ignored, remove table
-					table.remove(a_ParamTypes, iParams)
-					return false
-				end
+			if #a_ParamTypes == 0 then
+				return true
 			end
 		end
 	end
@@ -460,6 +451,16 @@ function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
 		return false
 	end
 	return true
+end
+
+
+
+function AddToIgnoreTable(a_ClassName, a_FunctionName, a_Key)
+	if g_Ignore[a_ClassName][a_FunctionName] == nil then
+		g_Ignore[a_ClassName][a_FunctionName] = {}
+	end
+
+	g_Ignore[a_ClassName][a_FunctionName][a_Key] = true
 end
 
 

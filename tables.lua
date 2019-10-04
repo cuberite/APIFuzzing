@@ -276,6 +276,9 @@ function CreateSharedIgnoreTable()
 	-- entity:GetArmorCoverAgainst(nil, 18, 1)
 	g_IgnoreShared.cEntity.GetArmorCoverAgainst = true
 
+	-- entity:TakeDamage(18, nil, 1, 1)
+	g_IgnoreShared.cEntity.TakeDamage = true
+
 	-- cRoot:Get():GetDefaultWorld():GetDefaultWeatherInterval(3)
 	g_IgnoreShared.cWorld.GetDefaultWeatherInterval = true
 
