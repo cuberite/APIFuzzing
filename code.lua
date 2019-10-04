@@ -9,7 +9,7 @@ function(a_FunctionName, a_ParamTypes)
 [[local obj = cBlockArea()
 obj:Create(10, 10, 10, 47)
 GatherReturnValues(obj:%s(%s))
-]],	a_FunctionName, a_ParamTypes)
+]], a_FunctionName, a_ParamTypes)
 end
 
 
@@ -25,7 +25,7 @@ world:DoWithEntityByID(entityID,
 		g_CallbackCalled = true
 		local obj = tolua.cast(a_Entity, "cBoat")
 		GatherReturnValues(obj:%s(%s))
-	end)]],	a_FunctionName, a_ParamTypes)
+	end)]], a_FunctionName, a_ParamTypes)
 end
 
 
@@ -175,7 +175,7 @@ function(a_FunctionName, a_ParamTypes)
 		GatherReturnValues(monster:%s(%s))
 		return true
 	end)
-]],	a_FunctionName, a_ParamTypes)
+]], a_FunctionName, a_ParamTypes)
 end
 
 
@@ -192,7 +192,7 @@ world:DoWithEntityByID(entityID,
 		local obj = tolua.cast(a_Entity, "cPickup")
 		GatherReturnValues(obj:%s(%s))
 	end)
-]],	a_FunctionName, a_ParamTypes)
+]], a_FunctionName, a_ParamTypes)
 end
 
 

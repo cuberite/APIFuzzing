@@ -182,15 +182,15 @@ function RunFuzzing(a_API)
 	for className, tbFunctions in pairs(a_API) do
 		-- Create table for functions
 		if g_Ignore[className] == nil then
-		 	g_Ignore[className] = {}
+			g_Ignore[className] = {}
 		end
 
 		if g_IgnoreShared[className] == nil then
-		 	g_IgnoreShared[className] = {}
+			g_IgnoreShared[className] = {}
 		end
 
 		if g_Crashed[className] == nil then
-		 	g_Crashed[className] = {}
+			g_Crashed[className] = {}
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
@@ -211,15 +211,15 @@ function CheckAPI(a_API)
 	for className, tbFunctions in pairs(a_API) do
 		-- Create table for functions
 		if g_Ignore[className] == nil then
-		 	g_Ignore[className] = {}
+			g_Ignore[className] = {}
 		end
 
 		if g_IgnoreShared[className] == nil then
-		 	g_IgnoreShared[className] = {}
+			g_IgnoreShared[className] = {}
 		end
 
 		if g_Crashed[className] == nil then
-		 	g_Crashed[className] = {}
+			g_Crashed[className] = {}
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
@@ -304,8 +304,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 	if not(a_IsStatic) then
 		-- TODO: Fix that...
 		if a_ClassName ~= "cBlockArea" and g_BlockEntityCallBackToBlockType[a_FunctionName] ~= nil then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, ".. g_BlockEntityCallBackToBlockType[a_FunctionName] ..", 0)"
-			fncTest = fncTest .. " GatherReturnValues(cRoot:Get():GetDefaultWorld():".. a_FunctionName .. "(10, 100, 10,"
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, " .. g_BlockEntityCallBackToBlockType[a_FunctionName] .. ", 0)"
+			fncTest = fncTest .. " GatherReturnValues(cRoot:Get():GetDefaultWorld():" .. a_FunctionName .. "(10, 100, 10,"
 			fncTest = fncTest .. "function(a_BlockEntity) g_CallbackCalled = true end))"
 		elseif g_Code[a_ClassName] ~= nil then
 			if g_Code[a_ClassName][a_FunctionName] ~= nil then

@@ -83,7 +83,7 @@ function CreateAndFill(a_Output, a_Input)
 		r = r + 1
 	end
 
-	local r = #a_Output[1]
+	r = #a_Output[1]
 	for amount = 1, #a_Output[1] do
 		local val = a_Output[#a_Output][r]
 		a_Output[#a_Output][r] = a_Input
