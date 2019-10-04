@@ -195,7 +195,7 @@ function RunFuzzing(a_API)
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
 			local paramTypes = GetParamTypes(tbFncInfo, functionName)
-			if paramTypes ~= nil then
+			if paramTypes ~= nil and paramTypes ~= "ignore" then
 				local inputs = CreateInputs(className, functionName, paramTypes)
 				if inputs ~= nil and not(IsIgnored(className, functionName, paramTypes)) then
 					FunctionsWithParams(a_API, className, functionName, nil, inputs)
@@ -223,8 +223,8 @@ function CheckAPI(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
-			local paramTypes = GetParamTypes(tbFncInfo)
-			if not(IsIgnored(className, functionName, paramTypes)) then
+			local paramTypes = GetParamTypes(tbFncInfo, functionName)
+			if paramTypes ~= "ignore" and not(IsIgnored(className, functionName, paramTypes)) then
 				local returnTypes = GetReturnTypes(tbFncInfo, className, functionName)
 				if paramTypes ~= nil then
 					local inputs = CreateInputs(className, functionName, paramTypes)
@@ -321,7 +321,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Param
 		end
 
 		if a_API[a_ClassName].Functions.constructor ~= nil and fncTest == "" then
-			local constParams = GetParamTypes(a_API[a_ClassName].Functions.constructor)
+			local constParams = GetParamTypes(a_API[a_ClassName].Functions.constructor, a_FunctionName)
 			if constParams ~= nil and #constParams ~= 0 then
 				local constInputs = CreateInputs(a_ClassName, "constructor", constParams)
 				fncTest = "local obj = " .. a_ClassName .. "(" .. table.concat(constInputs[1], ", ") .. ")"

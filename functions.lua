@@ -203,10 +203,28 @@ end
 
 
 
+function IsDeprecated(a_Notes)
+	if
+		string.find(a_Notes, "vector%-parametered") or
+		string.find(a_Notes, "OBSOLETE") or
+		string.find(a_Notes, "DEPRECATED") or
+		string.find(a_Notes, "deprecated")
+	then
+		return true
+	end
+	return false
+end
+
+
+
 -- Check if passed function table has params
 -- Returns table with tables of param types or nil
 -- Also adds flag IsStatic, if present
 function GetParamTypes(a_FncInfo, a_FunctionName)
+	if a_FncInfo.Notes ~= nil and IsDeprecated(a_FncInfo.Notes) then
+		return "ignore"
+	end
+
 	local paramTypes = {}
 	if a_FncInfo.Params ~= nil then
 		for _, param in ipairs(a_FncInfo.Params) do
@@ -221,16 +239,24 @@ function GetParamTypes(a_FncInfo, a_FunctionName)
 	local hasParamTypes = false
 	for _, tb in ipairs(a_FncInfo) do
 		local temp = {}
+		local bIgnore = false
 		if tb.Params ~= nil then
-			for _, param in pairs(tb.Params) do
-				hasParamTypes = true
-				table.insert(temp, param.Type)
+			-- Check for vector-parametered, OBSOLETE and DEPRECATED
+			if IsDeprecated(tb.Notes) then
+				bIgnore = true
+			else
+				for _, param in pairs(tb.Params) do
+					hasParamTypes = true
+					table.insert(temp, param.Type)
+				end
 			end
 		end
-		if tb.IsStatic then
-			temp.IsStatic = true
+		if not(bIgnore) then
+			if tb.IsStatic then
+				temp.IsStatic = true
+			end
+			table.insert(paramTypes, temp)
 		end
-		table.insert(paramTypes, temp)
 	end
 	if hasParamTypes then
 		return paramTypes

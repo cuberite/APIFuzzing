@@ -54,17 +54,22 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	CreateAndFill(inputs, E_BLOCK_STONE_BRICKS)
 	CreateAndFill(inputs, E_ITEM_BED)
 	CreateAndFill(inputs, 1)
+	CreateAndFill(inputs, "{}")
+	-- CreateAndFill(inputs, "'" .. g_Infinity .. "'")
 
 	-- Don't use this two params. Using them will always crash the server
 	-- CreateAndFill(inputs, "'nan'")
 	-- CreateAndFill(inputs, "'infinity'")
 
-	CreateAndFill(inputs, "'" .. g_Infinity .. "'")
-	CreateAndFill(inputs, "{}")
+	-- This params will overload the chunk generator and can cause false positives due to a deadlock
+	-- for _ = 1, 10 do
+	-- 	CreateAndFill(inputs, math.random(-10000, 10000))
+	-- end
 
-	for _ = 1, 10 do
-		CreateAndFill(inputs, math.random(-10000, 10000))
-	end
+	-- Testing this params can take a long time
+	-- for i = -100, 100 do
+	-- 	CreateAndFill(inputs, i)
+	-- end
 
 	return inputs
 end

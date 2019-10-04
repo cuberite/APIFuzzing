@@ -105,25 +105,6 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cCompositeChat.AddShowAchievementPart = true
 	g_IgnoreShared.cDispenserEntity.SpawnProjectileFromDispenser = true
 
-	-- Deprecated. TODO: Only ignore the functions that have numbers
-	g_IgnoreShared.cBlockInfo.GetPlaceSound = true
-	g_IgnoreShared.cWebAdmin.GetURLEncodedString = true
-	g_IgnoreShared.cWorld.SpawnBoat = {"number", "number", "number", "cBoat#eMaterial"}
-	g_IgnoreShared.cWorld.SpawnPrimedTNT = {"number", "number", "number", "number", "number"}
-	g_IgnoreShared.cWorld.WakeUpSimulators = true
-	g_IgnoreShared.cWorld.WakeUpSimulatorsInArea = true
-	g_IgnoreShared.Globals.LOGWARN = true
-	g_IgnoreShared.Globals.md5 = true
-	g_IgnoreShared.Globals.StringToMobType = true
-	g_IgnoreShared.cPlugin.GetLocalDirectory = true
-	g_IgnoreShared.cPlugin.GetDirectory = true
-	g_IgnoreShared.cEntity.IsSwimming = true
-	g_IgnoreShared.cEntity.IsSubmerged = true
-	g_IgnoreShared.cClientHandle.SendSoundEffect = true
-	g_IgnoreShared.cWorld.CastThunderbolt = true
-	g_IgnoreShared.cBlockInfo.Get = true
-	g_IgnoreShared.cWorld.BroadcastSoundEffect = true
-
 	-- Outputs to console, ignore it
 	g_IgnoreShared.cRoot.QueueExecuteConsoleCommand = true
 	g_IgnoreShared.cWorld.SetLinkedEndWorldName = true
@@ -133,6 +114,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.Globals.LOGERROR = true
 	g_IgnoreShared.Globals.LOGINFO = true
 	g_IgnoreShared.Globals.LOGWARNING = true
+	g_IgnoreShared.Globals.LOGWARN = true
 
 	-- Needs an monster as param
 	g_IgnoreShared.cMonster.GetLeashedTo = true
@@ -264,8 +246,6 @@ function CreateSharedIgnoreTable()
 
 
 	-- Ths functions causes the server to crash
-	g_IgnoreShared.Globals.ClickActionToString = true
-
 	g_IgnoreShared.cBoat.MaterialToItem = true
 	g_IgnoreShared.cBoat.MaterialToString = true
 
@@ -289,4 +269,37 @@ function CreateSharedIgnoreTable()
 	-- Discussion in process #3651, #3649
 	g_IgnoreShared.cEntity.MoveToWorld = true
 	g_IgnoreShared.cEntity.ScheduleMoveToWorld = true
+
+	-- Hit unreachable code: "Unsupported damage type" (30)
+	g_IgnoreShared.cEntity.ArmorCoversAgainst = true
+
+	-- entity:GetArmorCoverAgainst(nil, 18, 1)
+	g_IgnoreShared.cEntity.GetArmorCoverAgainst = true
+
+	-- cRoot:Get():GetDefaultWorld():GetDefaultWeatherInterval(3)
+	g_IgnoreShared.cWorld.GetDefaultWeatherInterval = true
+
+	-- cRoot:Get():GetDefaultWorld():SetWeather(3)
+	g_IgnoreShared.cWorld.SetWeather = true
+
+	-- RotateBlockFaceCW(6)
+	g_IgnoreShared.Globals.RotateBlockFaceCW = true
+
+	-- MirrorBlockFaceY(6)
+	g_IgnoreShared.Globals.MirrorBlockFaceY = true
+
+	-- RotateBlockFaceCCW(6)
+	g_IgnoreShared.Globals.RotateBlockFaceCCW = true
+
+	-- ReverseBlockFace(6)
+	g_IgnoreShared.Globals.ReverseBlockFace = true
+
+	-- DamageTypeToString(18)
+	g_IgnoreShared.Globals.DamageTypeToString = true
+
+	-- BlockFaceToString(6)
+	g_IgnoreShared.Globals.BlockFaceToString = true
+
+	-- ClickActionToString(355)
+	g_IgnoreShared.Globals.ClickActionToString = true
 end
