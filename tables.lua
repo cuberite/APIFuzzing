@@ -243,18 +243,44 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
 
+	-- This functions returns a boolean, needs fix in APIDoc
+	g_IgnoreShared.cWorld.GrowTree = true
+	g_IgnoreShared.cWorld.GrowTreeByBiome = true
+	g_IgnoreShared.cWorld.GrowTreeFromSapling = true
+
+	-- This function expects a Vector3i, needs fix in APIDoc and/or cuberite
+	g_IgnoreShared.cWorld.GrowTreeFromSapling = true
+
+	-- This function expects a Vector3i, needs fix in APIDoc
+	g_IgnoreShared.cWorld.GrowRipePlant = { [ "number" ] = true }
 
 
-	-- Ths functions causes the server to crash
+
+	-- This functions causes the server to crash
 	g_IgnoreShared.cBoat.MaterialToItem = true
 	g_IgnoreShared.cBoat.MaterialToString = true
+
+	-- Creates a boat with invalid material, that will crash the server when the world is saved
+	g_IgnoreShared.cBoat.SetMaterial = true
 
 	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- #3662
 
 	-- Expand(-5425, 1, 1, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Expand = true
+
 	-- Crop(1, 1, -9170, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Crop = true
+
+	-- Writes out-of-bounds (valgrind)
+	g_IgnoreShared.cBlockArea.FillRelCuboid = true
+	-- Can cause crash after many runs
+	--[[
+		for i = 1, 1000 do
+			local obj = cBlockArea()
+			obj:Create(10, 10, 10, 47)
+			obj:FillRelCuboid(1, 1, 1, 98, 1, 1, 1, 1, 1, 1, 1)
+		end
+	]]
 
 	-- Has functions causing the server to crash
 	g_IgnoreShared.cChunkDesc = "*"
