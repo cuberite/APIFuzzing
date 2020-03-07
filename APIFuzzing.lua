@@ -274,8 +274,8 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 			fncTest = fncTest .. "function(a_BlockEntity) g_CallbackCalled = true end))"
 		elseif g_Code[a_ClassName] ~= nil then
 			if g_Code[a_ClassName][a_FunctionName] ~= nil then
-				fncTest = g_Code[a_ClassName][a_FunctionName](a_FunctionName)
-			else
+				fncTest = g_Code[a_ClassName][a_FunctionName](a_Inputs)
+			elseif g_Code[a_ClassName].Class ~= nil then
 				fncTest = g_Code[a_ClassName].Class(a_FunctionName, a_Inputs)
 			end
 		elseif g_BlockEntityToBlockType[a_ClassName] ~= nil then
@@ -334,14 +334,14 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 	-- Load function, check for syntax problems
 	local fnc, errSyntax = loadstring(fncTest)
 	if fnc == nil then
-		LOG("######################################### SYNTAX ERROR DETECTED #########################################")
-		LOG(errSyntax)
-		LOG("")
-		LOG("                                             ## Code ##")
-		LOG("\n" .. fncTest)
-		LOG("")
-		LOG("This indicates a problem in the generation of the code in this plugin. Plugin will be stopped.")
-		LOG("#########################################################################################################")
+		print("######################################### SYNTAX ERROR DETECTED #########################################")
+		print(errSyntax)
+		print("")
+		print("                                             ## Code ##")
+		print("\n" .. fncTest)
+		print("")
+		print("This indicates a problem in the generation of the code in this plugin. Plugin will be stopped.")
+		print("#########################################################################################################")
 		Abort("Runtime of plugin stopped, because of syntax error.")
 	end
 
@@ -374,21 +374,21 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 
 	-- Check if an error occurred. NOTE: A error that occurred inside of a callback, can not be catched
 	if not(status) then
-		LOG("####################################### ERROR OCCURRED ON RUNTIME #######################################")
-		LOG(errRuntime)
-		LOG("")
-		LOG("                                             ## Code ##")
-		LOG("\n" .. fncTest)
-		LOG("")
-		LOG("Class =               " .. a_ClassName)
-		LOG("Function =            " .. a_FunctionName)
-		LOG("Params =              " .. a_Inputs)
-		LOG("This code caused an error on runtime. For example it could be:")
-		LOG("- the fault of this plugin, if a wrong param has been passed or a syntax error")
-		LOG("- a function that is documented, but not exported or doesn't exists")
-		LOG("- a missing IsStatic flag in the APIDoc")
-		LOG("#########################################################################################################")
-		LOG("")
+		print("### ERROR OCCURRED ON RUNTIME")
+		print(errRuntime)
+		print("")
+		print("## Code")
+		print(fncTest)
+		print("")
+		print("Class =               " .. a_ClassName)
+		print("Function =            " .. a_FunctionName)
+		print("Params =              " .. a_Inputs)
+		print("This code caused an error on runtime. For example it could be:")
+		print("- the fault of this plugin, if a wrong param has been passed or a syntax error")
+		print("- a function that is documented, but not exported or doesn't exists")
+		print("- a missing IsStatic flag in the APIDoc")
+		print("###")
+		print("")
 
 		-- Error occurred, bail out
 		return
@@ -406,7 +406,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 		return
 	end
 
-	local title = "########################## AMOUNT OF RETURN TYPES DOESN'T MATCH ########################################"
+	local title = "### AMOUNT OF RETURN TYPES DOESN'T MATCH"
 	local retGot = "nil"
 	local retAPIDoc = "nil"
 	local catched = false
@@ -437,16 +437,16 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 	end
 
 	if catched then
-		LOG(title)
-		LOG("")
-		LOG("                                             ## Code ##")
-		LOG("\n" .. fncTest)
-		LOG("")
-		LOG("Class =               " .. a_ClassName)
-		LOG("Function =            " .. a_FunctionName)
-		LOG("Got =                 " .. retGot)
-		LOG("APIDoc =              " .. retAPIDoc)
-		LOG("#########################################################################################################")
-		LOG("")
+		print(title)
+		print("")
+		print("## Code")
+		print(fncTest)
+		print("")
+		print("Class =               " .. a_ClassName)
+		print("Function =            " .. a_FunctionName)
+		print("Got =                 " .. retGot)
+		print("APIDoc =              " .. retAPIDoc)
+		print("###")
+		print("")
 	end
 end

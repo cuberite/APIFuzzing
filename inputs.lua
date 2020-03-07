@@ -63,7 +63,7 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	CreateAndFill(inputs, 1, tbRes)
 	CreateAndFill(inputs, "{}", tbRes)
 	CreateAndFill(inputs, "\"\"", tbRes)
-	CreateAndFill(inputs, "'" .. g_Infinity .. "'", tbRes)
+	-- CreateAndFill(inputs, "'" .. g_Infinity .. "'", tbRes)
 
 	-- Don't use this two params. Using them will always crash the server
 	-- CreateAndFill(inputs, "'nan'", tbRes)
