@@ -206,10 +206,10 @@ end
 
 
 function IsDeprecated(a_Notes)
+	a_Notes = a_Notes:lower()
 	if
 		string.find(a_Notes, "vector%-parametered") or
-		string.find(a_Notes, "OBSOLETE") or
-		string.find(a_Notes, "DEPRECATED") or
+		string.find(a_Notes, "obsolete") or
 		string.find(a_Notes, "deprecated")
 	then
 		return true
@@ -435,6 +435,23 @@ function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
 			if #a_ParamTypes == 0 then
 				return true
 			end
+		end
+	end
+
+	-- Check table g_IgnoreShared
+	if
+		g_IgnoreShared[a_ClassName] ~= nil and
+		g_IgnoreShared[a_ClassName][a_FunctionName] ~= nil
+	then
+		for index = #a_ParamTypes, 1, -1 do
+			local key = table.concat(a_ParamTypes[index], ", ")
+			if g_IgnoreShared[a_ClassName][a_FunctionName][key] then
+				table.remove(a_ParamTypes, index)
+			end
+		end
+
+		if #a_ParamTypes == 0 then
+			return true
 		end
 	end
 
