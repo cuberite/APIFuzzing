@@ -149,6 +149,21 @@ end
 
 
 
+g_Code.cItems = {}
+g_Code.cItems.AddItemGrid =
+function()
+	return string.format(
+[[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
+cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
+	function(a_ChestEntity)
+		g_CallbackCalled = true
+		local items = cItems()
+		GatherReturnValues(items:AddItemGrid(a_ChestEntity:GetContents()))
+	end)]])
+end
+
+
+
 g_Code.cItemGrid = {}
 g_Code.cItemGrid.Class =
 function(a_FunctionName, a_Inputs)

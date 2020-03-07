@@ -109,6 +109,7 @@ g_Params.ItemCategory.IsTool = "E_ITEM_DIAMOND_PICKAXE"
 
 
 g_Params.cItems = {}
+g_Params.cItems.AddItemGrid = "a_ChestEntity:GetContents()"
 g_Params.cItems.Delete = 0
 g_Params.cItems.Get = 0
 g_Params.cItems.Set =
