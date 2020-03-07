@@ -239,7 +239,7 @@ function CreateSharedIgnoreTable()
 	-- Got = nil; APIDoc = number, number, number
 	g_IgnoreShared.cDropSpenserEntity.AddDropSpenserDir = true
 
-	-- This functions don't accept Vector3i, but should be able
+	-- This functions don't accept Vector3i, but should be able, #4415
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
 
@@ -271,7 +271,7 @@ function CreateSharedIgnoreTable()
 	-- Crop(1, 1, -9170, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Crop = true
 
-	-- Writes out-of-bounds (valgrind)
+	-- Writes out-of-bounds (valgrind), #4454
 	g_IgnoreShared.cBlockArea.FillRelCuboid = true
 	-- Can cause crash after many runs
 	--[[
