@@ -119,7 +119,7 @@ function CreateSharedIgnoreTable()
 	-- Needs an monster as param
 	g_IgnoreShared.cMonster.GetLeashedTo = true
 
-	-- Requires score board, it's in rework: #3953
+	-- Requires score board, it's in rework: issue #3953
 	g_IgnoreShared.cPlayer.GetTeam = true
 
 	-- Don't change plugin infos
@@ -239,7 +239,7 @@ function CreateSharedIgnoreTable()
 	-- Got = nil; APIDoc = number, number, number
 	g_IgnoreShared.cDropSpenserEntity.AddDropSpenserDir = true
 
-	-- This functions don't accept Vector3i, but should be able, #4415
+	-- This functions don't accept Vector3i, but should be able, issue #4415
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
 
@@ -263,7 +263,7 @@ function CreateSharedIgnoreTable()
 	-- Creates a boat with invalid material, that will crash the server when the world is saved
 	g_IgnoreShared.cBoat.SetMaterial = true
 
-	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- #3662
+	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- issue #3662
 
 	-- Expand(-5425, 1, 1, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Expand = true
@@ -271,7 +271,7 @@ function CreateSharedIgnoreTable()
 	-- Crop(1, 1, -9170, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Crop = true
 
-	-- Writes out-of-bounds (valgrind), #4454
+	-- Writes out-of-bounds (valgrind), issue #4454
 	g_IgnoreShared.cBlockArea.FillRelCuboid = true
 	-- Can cause crash after many runs
 	--[[
@@ -292,7 +292,7 @@ function CreateSharedIgnoreTable()
 	-- A big number, will overload / deadlock the server
 	g_IgnoreShared.cWorld.DoExplosionAt = true
 
-	-- Discussion in process #3651, #3649
+	-- Discussion in process issue #3651, issue #3649
 	g_IgnoreShared.cEntity.MoveToWorld = true
 	g_IgnoreShared.cEntity.ScheduleMoveToWorld = true
 
