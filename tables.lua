@@ -271,17 +271,6 @@ function CreateSharedIgnoreTable()
 	-- Crop(1, 1, -9170, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Crop = true
 
-	-- Writes out-of-bounds (valgrind), issue #4454
-	g_IgnoreShared.cBlockArea.FillRelCuboid = true
-	-- Can cause crash after many runs
-	--[[
-		for i = 1, 1000 do
-			local obj = cBlockArea()
-			obj:Create(10, 10, 10, 47)
-			obj:FillRelCuboid(1, 1, 1, 98, 1, 1, 1, 1, 1, 1, 1)
-		end
-	]]
-
 	-- Has functions causing the server to crash
 	g_IgnoreShared.cChunkDesc = "*"
 
@@ -291,10 +280,6 @@ function CreateSharedIgnoreTable()
 
 	-- A big number, will overload / deadlock the server
 	g_IgnoreShared.cWorld.DoExplosionAt = true
-
-	-- Discussion in process issue #3651, issue #3649
-	g_IgnoreShared.cEntity.MoveToWorld = true
-	g_IgnoreShared.cEntity.ScheduleMoveToWorld = true
 
 	-- Hit unreachable code: "Unsupported damage type" (30)
 	g_IgnoreShared.cEntity.ArmorCoversAgainst = true
