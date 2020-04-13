@@ -17,11 +17,11 @@ function Initialize(a_Plugin)
 	math.randomseed(os.time())
 	math.random(); math.random(); math.random()
 
-	local tbCollect = {}
-	for i = 0, 300000 do
-		table.insert(tbCollect, "infinity")
-	end
-	g_Infinity = table.concat(tbCollect)
+	-- local tbCollect = {}
+	-- for i = 0, 300000 do
+	-- 	table.insert(tbCollect, "infinity")
+	-- end
+	-- g_Infinity = table.concat(tbCollect)
 
 	-- Create and load tables
 	CreateTables()
@@ -356,7 +356,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 		-- Call function
 		pcall(fnc)
 
-		-- Fuzzing in proccess, bail out. Makes no sense to run the code below,
+		-- Fuzzing in process, bail out. Makes no sense to run the code below,
 		-- if intentionally invalid params are passed :)
 		return
 	end
