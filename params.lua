@@ -4,6 +4,27 @@ g_Params = {}
 
 
 g_Params.cBlockArea = {}
+
+g_Params.cBlockArea.DoWithBlockEntityAt =
+function(a_Params)
+	if #a_Params == 2 then
+		return { "1", "1", "1", "function(a_BlockEntity) return true end" }
+	elseif #a_Params == 4 then
+		return { "Vector3i(1, 1, 1)", "function(a_BlockEntity) return true end" }
+	end
+end
+
+g_Params.cBlockArea.DoWithBlockEntityRelAt = g_Params.cBlockArea.DoWithBlockEntityAt
+
+g_Params.cBlockArea.FillRelCuboid =
+function(a_Params)
+	if #a_Params == 6 then
+			return { "cCuboid(5, 5, 5)", "1", "1", "1", "1", "1" }
+	else
+		return { "1", "5", "1", "5", "1", "5", "1", "1", "1", "1", "1" }
+	end
+end
+
 g_Params.cBlockArea.Write =
 function(a_Params)
 	if #a_Params == 2 then
@@ -35,17 +56,6 @@ function(a_Params)
 	end
 	return a_Params
 end
-
-g_Params.cBlockArea.DoWithBlockEntityAt =
-function(a_Params)
-	if #a_Params == 2 then
-		return { "1", "1", "1", "function(a_BlockEntity) return true end" }
-	elseif #a_Params == 4 then
-		return { "Vector3i(1, 1, 1)", "function(a_BlockEntity) return true end" }
-	end
-end
-
-g_Params.cBlockArea.DoWithBlockEntityRelAt = g_Params.cBlockArea.DoWithBlockEntityAt
 
 
 
@@ -89,6 +99,35 @@ end
 g_Params.cEnchantments = {}
 g_Params.cEnchantments.AddFromString = "'Looting = 1'"
 g_Params.cEnchantments.StringToEnchantmentID = "'Infinity'"
+
+
+
+g_Params.cEntity = {}
+g_Params.cEntity.MoveToWorld =
+function(a_Params)
+	if #a_Params == 2 then
+		if (a_Params[1] == "cWorld") then
+			return { "cRoot:Get():GetDefaultWorld()", "true" }
+		else
+			return { "'world_nether'", "true" }
+		end
+	elseif #a_Params == 3 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"false",
+			"Vector3d(100, 70, 100)",
+		}
+	elseif #a_Params == 4 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"Vector3d(100, 70, 100)",
+			"true",
+			"false"
+		}
+	end
+end
 
 
 
