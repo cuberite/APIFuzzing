@@ -254,6 +254,9 @@ function CreateSharedIgnoreTable()
 	-- This function expects a Vector3i, needs fix in APIDoc
 	g_IgnoreShared.cWorld.GrowRipePlant = { [ "number" ] = true }
 
+	-- Not filtered by function IsDeprecated as the word deprecated is not in the description...
+	g_IgnoreShared.cEntity.Destroy = { [ "bool" ] = true }
+
 
 
 	-- This functions causes the server to crash
