@@ -265,6 +265,12 @@ function CreateSharedIgnoreTable()
 
 	-- This functions causes the server to crash
 
+	-- Invalid effect type, crashes server
+	g_IgnoreShared.cPlayer.AddEntityEffect = true
+
+	-- If a to big block range (50) is used, the server will crash
+	g_IgnoreShared.cPlayer.SendBlocksAround = true
+
 	-- Issue# 4623
 	g_IgnoreShared.cEntity.MoveToWorld = true
 
