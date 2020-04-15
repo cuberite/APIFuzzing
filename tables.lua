@@ -133,6 +133,10 @@ function CreateSharedIgnoreTable()
 
 	-- This causes problem for fuzzing / checkapi, as the client name is hardcoded
 	g_IgnoreShared.cPlayer.SetName = true
+	g_IgnoreShared.cClientHandle.SetUsername = true
+
+	-- Don't kick the player
+	g_IgnoreShared.cClientHandle.Kick = true
 
 	-- Needs special handling
 	g_IgnoreShared.cBlockArea.Create = true
@@ -260,6 +264,10 @@ function CreateSharedIgnoreTable()
 
 
 	-- This functions causes the server to crash
+
+	-- Issue# 4623
+	g_IgnoreShared.cEntity.MoveToWorld = true
+
 	g_IgnoreShared.cBoat.MaterialToItem = true
 	g_IgnoreShared.cBoat.MaterialToString = true
 
