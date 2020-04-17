@@ -58,9 +58,9 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	CreateAndFill(inputs, "nil", tbRes)
 	CreateAndFill(inputs, "true", tbRes)
 	CreateAndFill(inputs, "false", tbRes)
-	CreateAndFill(inputs, E_BLOCK_STONE_BRICKS, tbRes)
-	CreateAndFill(inputs, E_ITEM_BED,tbRes)
-	CreateAndFill(inputs, 1, tbRes)
+	CreateAndFill(inputs, "E_BLOCK_STONE_BRICKS", tbRes)
+	CreateAndFill(inputs, "E_ITEM_BED", tbRes)
+	CreateAndFill(inputs, "1", tbRes)
 	CreateAndFill(inputs, "{}", tbRes)
 	CreateAndFill(inputs, "\"\"", tbRes)
 	CreateAndFill(inputs, "Vector3d(200, 100, 200)", tbRes)
@@ -72,6 +72,23 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	CreateAndFill(inputs, "Vector3d(200, 1000, 200)", tbRes)
 	CreateAndFill(inputs, "Vector3i(200, 1000, 200)", tbRes)
 	CreateAndFill(inputs, "Vector3f(200, 1000, 200)", tbRes)
+	CreateAndFill(inputs, "'text'", tbRes)
+	CreateAndFill(inputs, "' '", tbRes)
+	CreateAndFill(inputs, "0.0000000000000000000000000000000000000000000000000001", tbRes)
+	CreateAndFill(inputs, "-0.0000000000000000000000000000000000000000000000000001", tbRes)
+	CreateAndFill(inputs, "'\\n'", tbRes)
+	CreateAndFill(inputs, "'\\r'", tbRes)
+	CreateAndFill(inputs, "'\\t'", tbRes)
+	CreateAndFill(inputs, "''", tbRes)
+	CreateAndFill(inputs, "'\\n1\\n2\\n3'", tbRes)
+	CreateAndFill(inputs, "'\\n\\r\\t\\0'", tbRes)
+
+	-- Char characters
+	-- for i = 1, 255 do
+	--	CreateAndFill(inputs, "string.char(" .. tostring(i) ..  ")", tbRes)
+	-- end
+
+	-- Pass a very, very long string
 	-- CreateAndFill(inputs, "'" .. g_Infinity .. "'", tbRes)
 
 	-- Don't use this two params. Using them will always crash the server, #4408
@@ -94,7 +111,6 @@ end
 
 
 function CreateAndFill(a_Inputs, a_Value, a_Output)
-	-- local tbRes = {}
 	for _, tbInput in ipairs(a_Inputs) do
 		local tmp = tbInput
 		for i = 1, #tmp do
