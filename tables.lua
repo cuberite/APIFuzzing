@@ -97,9 +97,12 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cSplashPotionEntity = {}
 	g_IgnoreShared.cWebAdmin = {}
 	g_IgnoreShared.cWorld = {}
-
+	g_IgnoreShared.cServer = {}
 
 	-- ## Ignore a single or more functions ##
+
+	-- Don't change max player amount
+	g_IgnoreShared.cServer.SetMaxPlayers = true
 
 	-- Documented, but not exported
 	g_IgnoreShared.cCompositeChat.AddShowAchievementPart = true
@@ -148,6 +151,9 @@ function CreateSharedIgnoreTable()
 
 
 	-- ## Whole class ignored ##
+
+	-- Checked in cPlayer
+	g_IgnoreShared.cPawn = "*"
 
 	-- Deprecated
 	g_IgnoreShared.cTracer = "*"
