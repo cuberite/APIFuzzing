@@ -101,6 +101,9 @@ function CreateSharedIgnoreTable()
 
 	-- ## Ignore a single or more functions ##
 
+	-- Can cause a deadlock
+	g_IgnoreShared.cServer.IsPlayerInQueue = true
+
 	-- Don't change max player amount
 	g_IgnoreShared.cServer.SetMaxPlayers = true
 
@@ -285,6 +288,7 @@ function CreateSharedIgnoreTable()
 
 	-- Creates a boat with invalid material, that will crash the server when the world is saved
 	g_IgnoreShared.cBoat.SetMaterial = true
+	g_IgnoreShared.cWorld.SpawnBoat = true
 
 	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- issue #3662
 
