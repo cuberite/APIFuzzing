@@ -124,7 +124,11 @@ function CmdFuzzing(a_Split)
 
 	g_IsFuzzing = true
 	for _, entry in pairs(g_APIDesc) do
-		RunFuzzing(entry)
+		if RunFuzzing(entry) then
+			-- Stop fuzzing as file stop.txt exists
+			LOG("Detected file stop.txt Fuzzing stopped.")
+			return true
+		end
 	end
 
 	LOG("Fuzzing completed!")
@@ -157,6 +161,10 @@ function RunFuzzing(a_API)
 		end
 
 		for functionName, tbFncInfo in pairs(tbFunctions.Functions or {}) do
+			if cFile:IsFile("stop.txt") then
+				return true
+			end
+
 			local paramTypes = GetParamTypes(tbFncInfo, functionName)
 			if paramTypes ~= nil and paramTypes ~= "ignore" then
 				if not(IsIgnored(className, functionName, paramTypes)) then
@@ -168,6 +176,7 @@ function RunFuzzing(a_API)
 			end
 		end
 	end
+	return false
 end
 
 
