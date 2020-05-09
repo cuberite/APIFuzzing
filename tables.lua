@@ -289,12 +289,13 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cBoat.SetMaterial = true
 	g_IgnoreShared.cWorld.SpawnBoat = true
 
-	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true  -- issue #3662
+	-- Issue #3662
+	g_IgnoreShared.cEntity.HandleSpeedFromAttachee = true
 
-	-- Expand(-5425, 1, 1, 1, 1, 1)
+	-- local obj = cBlockArea() obj:Create(10, 10, 10, 47) obj:Expand(-5425, 1, 1, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Expand = true
 
-	-- Crop(1, 1, -9170, 1, 1, 1)
+	-- local obj = cBlockArea() obj:Create(10, 10, 10, 47) obj:Crop(1, 1, -9170, 1, 1, 1)
 	g_IgnoreShared.cBlockArea.Crop = true
 
 	-- Has functions causing the server to crash
