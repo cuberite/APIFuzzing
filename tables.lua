@@ -277,9 +277,6 @@ function CreateSharedIgnoreTable()
 	-- If a to big block range (50) is used, the server will crash
 	g_IgnoreShared.cPlayer.SendBlocksAround = true
 
-	-- Issue# 4623
-	g_IgnoreShared.cEntity.MoveToWorld = true
-
 	g_IgnoreShared.cBoat.MaterialToItem = true
 	g_IgnoreShared.cBoat.MaterialToString = true
 
