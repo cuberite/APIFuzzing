@@ -95,6 +95,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cPluginLua = {}
 	g_IgnoreShared.cRoot = {}
 	g_IgnoreShared.cSplashPotionEntity = {}
+	g_IgnoreShared.cUrlParser = {}
 	g_IgnoreShared.cWebAdmin = {}
 	g_IgnoreShared.cWorld = {}
 	g_IgnoreShared.cServer = {}
@@ -219,7 +220,6 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cTCPLink = "*"
 	g_IgnoreShared.cUDPEndpoint = "*"
 	g_IgnoreShared.cUrlClient = "*"
-	g_IgnoreShared.cUrlParser = "*"
 
 	-- Static function cast is unsafe
 	g_IgnoreShared.tolua = "*"
@@ -234,6 +234,10 @@ function CreateSharedIgnoreTable()
 
 
 	-- This has to be fixed in cuberite or in APIDoc
+
+	-- This functions returns the port as a number and not as a string
+	g_IgnoreShared.cUrlParser.Parse = true
+	g_IgnoreShared.cUrlParser.ParseAuthorityPart = true
 
 	-- This functions doesn't exists in cuberite
 	-- g_IgnoreShared.cChunkDesc.IsUsingDefaultStructures = true

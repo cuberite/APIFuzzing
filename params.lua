@@ -226,6 +226,13 @@ g_Params.cRoot.GetFurnaceRecipe = "cItem(E_ITEM_RAW_FISH)"
 g_Params.cRoot.GetWorld = "'world'"
 
 
+
+g_Params.cUrlParser = {}
+g_Params.cUrlParser.Parse = "'http://user:password@website.com:9921'"
+g_Params.cUrlParser.ParseAuthorityPart = "'http://user:password@website.com'"
+
+
+
 g_Params.cWorld = {}
 g_Params.cWorld.DoWithPlayer =
 {
