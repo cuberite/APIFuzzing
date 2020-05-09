@@ -235,6 +235,10 @@ function CreateSharedIgnoreTable()
 
 	-- This has to be fixed in cuberite or in APIDoc
 
+	-- This functions doesn't exists in cuberite
+	-- g_IgnoreShared.cChunkDesc.IsUsingDefaultStructures = true
+	-- g_IgnoreShared.cChunkDesc.SetUseDefaultStructures = true
+
 	-- This functions are missing return types in APIDoc
 	g_IgnoreShared.cRoot.ForEachWorld = true
 	g_IgnoreShared.cRoot.ForEachPlayer = true
@@ -277,6 +281,7 @@ function CreateSharedIgnoreTable()
 	-- If a to big block range (50) is used, the server will crash
 	g_IgnoreShared.cPlayer.SendBlocksAround = true
 
+	-- Crashes the server when a invalid material is passed
 	g_IgnoreShared.cBoat.MaterialToItem = true
 	g_IgnoreShared.cBoat.MaterialToString = true
 
@@ -294,10 +299,6 @@ function CreateSharedIgnoreTable()
 
 	-- Has functions causing the server to crash
 	g_IgnoreShared.cChunkDesc = "*"
-
-	-- This functions doesn't exists in cuberite
-	-- g_IgnoreShared.cChunkDesc.IsUsingDefaultStructures = true
-	-- g_IgnoreShared.cChunkDesc.SetUseDefaultStructures = true
 
 	-- A big number, will overload / deadlock the server
 	g_IgnoreShared.cWorld.DoExplosionAt = true
