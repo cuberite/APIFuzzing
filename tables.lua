@@ -110,7 +110,6 @@ function CreateSharedIgnoreTable()
 
 	-- Documented, but not exported
 	g_IgnoreShared.cCompositeChat.AddShowAchievementPart = true
-	g_IgnoreShared.cDispenserEntity.SpawnProjectileFromDispenser = true
 
 	-- Outputs to console, ignore it
 	g_IgnoreShared.cRoot.QueueExecuteConsoleCommand = true
