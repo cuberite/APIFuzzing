@@ -253,9 +253,6 @@ function CreateSharedIgnoreTable()
 	-- Got number; APIDoc: table
 	g_IgnoreShared.cWorld.SpawnSplitExperienceOrbs = true
 
-	-- Got = nil; APIDoc = number, number, number
-	g_IgnoreShared.cDropSpenserEntity.AddDropSpenserDir = true
-
 	-- This functions don't accept Vector3i, but should be able, issue #4415
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
@@ -267,6 +264,7 @@ function CreateSharedIgnoreTable()
 
 	-- This function expects a Vector3i, needs fix in APIDoc and/or cuberite
 	g_IgnoreShared.cWorld.GrowTreeFromSapling = true
+	g_IgnoreShared.cDropSpenserEntity.AddDropSpenserDir = true
 
 	-- This function expects a Vector3i, needs fix in APIDoc
 	g_IgnoreShared.cWorld.GrowRipePlant = { [ "number" ] = true }
