@@ -158,9 +158,6 @@ function CreateSharedIgnoreTable()
 	-- Checked in cPlayer
 	g_IgnoreShared.cPawn = "*"
 
-	-- Deprecated
-	g_IgnoreShared.cTracer = "*"
-
 	-- Has only function GetName
 	g_IgnoreShared.cPainting = "*"
 
