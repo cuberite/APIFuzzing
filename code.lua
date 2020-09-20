@@ -178,6 +178,20 @@ end
 
 
 
+g_Code.cItemGrid.FindItem =
+function(a_Inputs)
+	return string.format(
+[[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
+cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
+	function(a_ChestEntity)
+		a_ChestEntity:GetContents():AddItem(cItem(1, 1))
+		g_CallbackCalled = true
+		GatherReturnValues(a_ChestEntity:GetContents():FindItem(%s))
+	end)]], a_Inputs)
+end
+
+
+
 g_Code.cMonster = {}
 g_Code.cMonster.Class =
 function(a_FunctionName, a_Inputs)

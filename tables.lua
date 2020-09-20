@@ -99,6 +99,7 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cWebAdmin = {}
 	g_IgnoreShared.cWorld = {}
 	g_IgnoreShared.cServer = {}
+	g_IgnoreShared.cNoteEntity = {}
 
 	-- ## Ignore a single or more functions ##
 
@@ -150,8 +151,6 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cBlockArea.LoadFromSchematicFile = true
 	g_IgnoreShared.cBlockArea.LoadFromSchematicString = true
 	g_IgnoreShared.cBlockArea.SaveToSchematicFile = true
-
-
 
 	-- ## Whole class ignored ##
 
@@ -230,9 +229,19 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cFile = "*"
 	g_IgnoreShared.cIniFile = "*"
 
+	-- ## Deprecated functions ##
+
+	-- Replaced by cNoteEntity:GetNote
+	g_IgnoreShared.cNoteEntity.GetPitch = true
+
+	-- Replaced by cNoteEntity:IncrementNote
+	g_IgnoreShared.cNoteEntity.IncrementPitch = true
+
+	-- Replaced by cNoteEntity:SetNote
+	g_IgnoreShared.cNoteEntity.SetPitch = true
 
 
-	-- This has to be fixed in cuberite or in APIDoc
+	-- ## This has to be fixed in cuberite or in APIDoc ##
 
 	-- This functions returns the port as a number and not as a string
 	g_IgnoreShared.cUrlParser.Parse = true
@@ -273,8 +282,12 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cEntity.Destroy = { [ "bool" ] = true }
 
 
-
 	-- This functions causes the server to crash
+
+	-- Can result in  a verification failure
+	g_IgnoreShared.cWorld.GenerateChunk = true
+	g_IgnoreShared.cWorld.RegenerateChunk = true
+	g_IgnoreShared.cWorld.PrepareChunk = true
 
 	-- Invalid effect type, crashes server
 	g_IgnoreShared.cPlayer.AddEntityEffect = true
