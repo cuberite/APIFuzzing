@@ -1,4 +1,4 @@
-function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
+function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	local inputs = {}
 
 	for _, tbParams in ipairs(a_Params) do
@@ -7,6 +7,8 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 			LOG(string.format("%s, %s", a_ClassName, a_FunctionName))
 			Abort("Got nil, expected a table!")
 		end
+		local key = table.concat(tbParams, ", ")
+		tbTemp.key = key
 		table.insert(inputs, tbTemp)
 	end
 
@@ -18,8 +20,8 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 		end
 	end
 
-	-- If we are not fuzzing. Check if a param has value nil.
-	if not(a_Fuzzing) then
+	-- If we are not fuzzing. Check if a param has value nil
+	if not(g_IsFuzzing) then
 		for i = 1,#inputs do
 			for index, param in ipairs(inputs[i]) do
 				if param == "nil" then
@@ -48,96 +50,76 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params, a_Fuzzing)
 		return inputs
 	end
 
-	-- Replace params from right to left with nil
-	local r = #inputs[1]
-	for amount = 1, #inputs[1] do
-		table.insert(inputs, CopyTable(inputs[1], inputs[1].IsStatic))
+	local tbRes = {}
+	for _, tb in ipairs(inputs) do
+		table.insert(tbRes, CopyTable(tb))
+	end
 
-		for i = r, #a_Params do
-			inputs[#inputs][i] = "nil"
+	CreateAndFill(inputs, "nil", tbRes)
+	CreateAndFill(inputs, "true", tbRes)
+	CreateAndFill(inputs, "false", tbRes)
+	CreateAndFill(inputs, "E_BLOCK_STONE_BRICKS", tbRes)
+	CreateAndFill(inputs, "E_ITEM_BED", tbRes)
+	CreateAndFill(inputs, "1", tbRes)
+	CreateAndFill(inputs, "{}", tbRes)
+	CreateAndFill(inputs, "\"\"", tbRes)
+	CreateAndFill(inputs, "Vector3d(200, 100, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3i(200, 100, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3f(200, 100, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3d(200, -100, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3i(200, -100, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3f(200, -100, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3d(200, 1000, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3i(200, 1000, 200)", tbRes)
+	CreateAndFill(inputs, "Vector3f(200, 1000, 200)", tbRes)
+	CreateAndFill(inputs, "'text'", tbRes)
+	CreateAndFill(inputs, "' '", tbRes)
+	CreateAndFill(inputs, "0.0000000000000000000000000000000000000000000000000001", tbRes)
+	CreateAndFill(inputs, "-0.0000000000000000000000000000000000000000000000000001", tbRes)
+	CreateAndFill(inputs, "'\\n'", tbRes)
+	CreateAndFill(inputs, "'\\r'", tbRes)
+	CreateAndFill(inputs, "'\\t'", tbRes)
+	CreateAndFill(inputs, "''", tbRes)
+	CreateAndFill(inputs, "'\\n1\\n2\\n3'", tbRes)
+	CreateAndFill(inputs, "'\\n\\r\\t\\0'", tbRes)
+
+	-- Char characters
+	-- for i = 1, 255 do
+	--	CreateAndFill(inputs, "string.char(" .. tostring(i) ..  ")", tbRes)
+	-- end
+
+	-- Pass a very, very long string
+	-- CreateAndFill(inputs, "'" .. g_Infinity .. "'", tbRes)
+
+	-- Don't use this two params. Using them will always crash the server, #4408
+	-- CreateAndFill(inputs, "'nan'", tbRes)
+	-- CreateAndFill(inputs, "'infinity'", tbRes)
+
+	-- This params will overload the chunk generator and can cause false positives due to a deadlock
+	-- for _ = 1, 10 do
+	-- 	CreateAndFill(inputs, math.random(-10000, 10000), tbRes)
+	-- end
+
+	-- Testing this params can take a long time
+	-- for i = -100, 100 do
+	-- 	CreateAndFill(inputs, i, tbRes)
+	-- end
+
+	return tbRes
+end
+
+
+
+function CreateAndFill(a_Inputs, a_Value, a_Output)
+	for _, tbInput in ipairs(a_Inputs) do
+		local tmp = tbInput
+		for i = 1, #tmp do
+			local val = tmp[i]
+			tmp[i] = a_Value
+			table.insert(a_Output, CopyTable(tmp))
+			tmp[i] = val
 		end
-		r = r - 1
 	end
-
-	local tmp = {}
-	local hasNumber = false
-	-- Add negative and positive numbers
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = -10000
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		hasNumber = false
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = 10000
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		hasNumber = false
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	-- Add block types, item types
-	tmp = {}
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = E_BLOCK_STONE_BRICKS
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		hasNumber = false
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		if a_Params[i] == "number" then
-			hasNumber = true
-			tmp[i] = E_ITEM_BED
-		else
-			tmp[i] = inputs[1][i]
-		end
-	end
-	if hasNumber then
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		tmp[i] = E_ITEM_BED
-	end
-	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-
-	for _ = 1, 10 do
-		tmp = {}
-		for i = 1, #a_Params do
-			tmp[i] = math.random(-10000, 10000)
-		end
-		table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-	end
-
-	tmp = {}
-	for i = 1, #a_Params do
-		tmp[i] = 1
-	end
-	table.insert(inputs, CopyTable(tmp, inputs[1].IsStatic))
-
-	return inputs
 end
 
 
@@ -233,6 +215,8 @@ function CreateValidParams(a_ClassName, a_FunctionName, a_Params)
 		elseif param == "any" then  -- Different source different entity
 			inputs[index] = "nil"
 		elseif param == "<unknown>" then  -- TODO
+			inputs[index] = "nil"
+		elseif param == "cCraftingGrid" then
 			inputs[index] = "nil"
 		end
 

@@ -1,5 +1,3 @@
-
-
 -- Finds out the type of the return types
 function ObjectToTypeName(a_ClassName, a_FunctionName, a_ReturnTypes)
 	local ret = {}
@@ -57,14 +55,13 @@ end
 
 
 
-function CopyTable(a_Source, a_IsStatic)
+function CopyTable(a_Source)
 	local tmp = {}
-	for i = 1, #a_Source do
-		tmp[i] = a_Source[i]
+
+	for key, value in pairs(a_Source) do
+		tmp[key] = value
 	end
-	if a_IsStatic then
-		tmp.IsStatic = true
-	end
+
 	return tmp
 end
 
@@ -92,6 +89,7 @@ function CheckIfCrashed()
 		if g_Ignore[className] == nil then
 			g_Ignore[className] = {}
 		end
+		-- TODO
 		g_Ignore[className][functionName] = nil
 
 	end
@@ -105,11 +103,15 @@ end
 
 
 -- Saves current class name, function name and params
-function SaveCurrentTest(a_ClassName, a_FunctionName, a_FunctionAndParams)
+function SaveCurrentTest(a_ClassName, a_FunctionName, a_FunctionAndParams)  -- TODO
 	local fileCurrent = io.open(g_Plugin:GetLocalFolder() .. cFile:GetPathSeparator() .. "current.txt", "w")
 	fileCurrent:write(a_ClassName, "\n")
 	fileCurrent:write(a_FunctionName, "\n")
-	fileCurrent:write(a_FunctionAndParams, "\n")
+	if a_FunctionAndParams:len() > 10000 then
+		fileCurrent:write("infinity", "\n")
+	else
+		fileCurrent:write(a_FunctionAndParams, "\n")
+	end
 	fileCurrent:close()
 end
 
@@ -140,13 +142,15 @@ function SaveTableIgnore()
 	for className, tbFunctions in pairs(g_Ignore) do
 		local s = "\t" .. className .. " =\n\t{\n"
 		local writeIt = false
-		if tbFunctions ~= "*" then
-			for functionName, _ in pairs(tbFunctions) do
+		for functionName, tbKeys in pairs(tbFunctions) do
+			s = s .. "\t\t" .. functionName .. " =\n\t\t{\n"
+			for key, _ in pairs(tbKeys) do
 				writeIt = true
-				s = s .. "\t\t" .. functionName .. " = true,\n"
+				s = s .. "\t\t\t[ \"" .. key .. "\" ] = true,\n"
 			end
-			s = s .. "\t},\n"
+			s = s .. "\t\t},\n"
 		end
+		s = s .. "\t},\n"
 		if writeIt then
 			fileIgnore:write(s)
 		end
@@ -201,10 +205,28 @@ end
 
 
 
+function IsDeprecated(a_Notes)
+	a_Notes = a_Notes:lower()
+	if
+		string.find(a_Notes, "vector%-parametered") or
+		string.find(a_Notes, "obsolete") or
+		string.find(a_Notes, "deprecated")
+	then
+		return true
+	end
+	return false
+end
+
+
+
 -- Check if passed function table has params
 -- Returns table with tables of param types or nil
 -- Also adds flag IsStatic, if present
 function GetParamTypes(a_FncInfo, a_FunctionName)
+	if a_FncInfo.Notes ~= nil and IsDeprecated(a_FncInfo.Notes) then
+		return "ignore"
+	end
+
 	local paramTypes = {}
 	if a_FncInfo.Params ~= nil then
 		for _, param in ipairs(a_FncInfo.Params) do
@@ -219,16 +241,24 @@ function GetParamTypes(a_FncInfo, a_FunctionName)
 	local hasParamTypes = false
 	for _, tb in ipairs(a_FncInfo) do
 		local temp = {}
+		local bIgnore = false
 		if tb.Params ~= nil then
-			for _, param in pairs(tb.Params) do
-				hasParamTypes = true
-				table.insert(temp, param.Type)
+			-- Check for vector-parametered, OBSOLETE and DEPRECATED
+			if IsDeprecated(tb.Notes) then
+				bIgnore = true
+			else
+				for _, param in pairs(tb.Params) do
+					hasParamTypes = true
+					table.insert(temp, param.Type)
+				end
 			end
 		end
-		if tb.IsStatic then
-			temp.IsStatic = true
+		if not(bIgnore) then
+			if tb.IsStatic then
+				temp.IsStatic = true
+			end
+			table.insert(paramTypes, temp)
 		end
-		table.insert(paramTypes, temp)
 	end
 	if hasParamTypes then
 		return paramTypes
@@ -307,7 +337,7 @@ function GetEnumValue(a_EnumType)
 		end
 	else
 		-- Check Globals in APIDesc
-		local class = GetClass("Globals", a_EnumType)
+		local class = GetClass("Globals")
 		if class.ConstantGroups[a_EnumType] ~= nil then
 			local include = class.ConstantGroups[a_EnumType].Include
 
@@ -357,7 +387,7 @@ end
 
 
 -- Loops over the API files and searches the class
-function GetClass(a_ClassName, a_EnumType)
+function GetClass(a_ClassName)
 	for _, tbClasses in pairs(g_APIDesc) do
 		if tbClasses[a_ClassName] ~= nil then
 			return tbClasses[a_ClassName]
@@ -370,6 +400,10 @@ end
 
 
 function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
+	if g_IgnoreShared[a_ClassName] == "*" then
+		return true
+	end
+
 	-- Check if function is ignored, causes crash or is special
 	if
 		(type(g_IgnoreShared[a_ClassName]) == "table" and
@@ -385,28 +419,39 @@ function IsIgnored(a_ClassName, a_FunctionName, a_ParamTypes)
 		return true
 	end
 
-	-- Check if function is overloaded and has params that should be ignored
-	if
-		type(g_IgnoreShared[a_ClassName]) == "table" and
-		type(g_IgnoreShared[a_ClassName][a_FunctionName]) == "table"
-	then
-		for iParams, tbParams in ipairs(a_ParamTypes) do
-			if #tbParams == #g_IgnoreShared[a_ClassName][a_FunctionName] then
-				local bAreSame = false
-				for i = 1, #tbParams do
-					if tbParams[i] == g_IgnoreShared[a_ClassName][a_FunctionName][i] then
-						bAreSame = true
-					else
-						bAreSame = false
-						break
-					end
-				end
-				if bAreSame then
-					-- This params are ignored, remove table
-					table.remove(a_ParamTypes, iParams)
-					return false
+	-- Check table g_Ignore
+	if g_IsFuzzing then
+		if
+			g_Ignore[a_ClassName] ~= nil and
+			g_Ignore[a_ClassName][a_FunctionName] ~= nil
+		then
+			for index = #a_ParamTypes, 1, -1 do
+				local key = table.concat(a_ParamTypes[index], ", ")
+				if g_Ignore[a_ClassName][a_FunctionName][key] then
+					table.remove(a_ParamTypes, index)
 				end
 			end
+
+			if #a_ParamTypes == 0 then
+				return true
+			end
+		end
+	end
+
+	-- Check table g_IgnoreShared
+	if
+		g_IgnoreShared[a_ClassName] ~= nil and
+		g_IgnoreShared[a_ClassName][a_FunctionName] ~= nil
+	then
+		for index = #a_ParamTypes, 1, -1 do
+			local key = table.concat(a_ParamTypes[index], ", ")
+			if g_IgnoreShared[a_ClassName][a_FunctionName][key] then
+				table.remove(a_ParamTypes, index)
+			end
+		end
+
+		if #a_ParamTypes == 0 then
+			return true
 		end
 	end
 
@@ -427,9 +472,22 @@ end
 
 
 
+function AddToIgnoreTable(a_ClassName, a_FunctionName, a_Key)
+	if g_Ignore[a_ClassName][a_FunctionName] == nil then
+		g_Ignore[a_ClassName][a_FunctionName] = {}
+	end
+
+	g_Ignore[a_ClassName][a_FunctionName][a_Key] = true
+end
+
+
+
 function Abort(a_ErrorMessage)
-	local fileStop = io.open("stop.txt", "w")
-	fileStop:close()
+	-- Only create stop file in fuzzing mode
+	if g_IsFuzzing then
+		local fileStop = io.open("stop.txt", "w")
+		fileStop:close()
+	end
 
 	assert(false, a_ErrorMessage)
 end

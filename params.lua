@@ -1,7 +1,61 @@
 -- Contains valid params for functions
 
-
 g_Params = {}
+
+
+g_Params.cBlockArea = {}
+
+g_Params.cBlockArea.DoWithBlockEntityAt =
+function(a_Params)
+	if #a_Params == 2 then
+		return { "1", "1", "1", "function(a_BlockEntity) return true end" }
+	elseif #a_Params == 4 then
+		return { "Vector3i(1, 1, 1)", "function(a_BlockEntity) return true end" }
+	end
+end
+
+g_Params.cBlockArea.DoWithBlockEntityRelAt = g_Params.cBlockArea.DoWithBlockEntityAt
+
+g_Params.cBlockArea.FillRelCuboid =
+function(a_Params)
+	if #a_Params == 6 then
+			return { "cCuboid(5, 5, 5)", "1", "1", "1", "1", "1" }
+	else
+		return { "1", "5", "1", "5", "1", "5", "1", "1", "1", "1", "1" }
+	end
+end
+
+g_Params.cBlockArea.Write =
+function(a_Params)
+	if #a_Params == 2 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"Vector3i(0, 0, 0)"
+		}
+	elseif #a_Params == 3 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"Vector3i(0, 0, 0)",
+			"3"
+		}
+	elseif #a_Params == 4 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"0", "0", "0"
+		}
+	elseif #a_Params == 5 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"0", "0", "0",
+			"3"
+		}
+	end
+	return a_Params
+end
 
 
 
@@ -48,6 +102,35 @@ g_Params.cEnchantments.StringToEnchantmentID = "'Infinity'"
 
 
 
+g_Params.cEntity = {}
+g_Params.cEntity.MoveToWorld =
+function(a_Params)
+	if #a_Params == 2 then
+		if (a_Params[1] == "cWorld") then
+			return { "cRoot:Get():GetDefaultWorld()", "true" }
+		else
+			return { "'world_nether'", "true" }
+		end
+	elseif #a_Params == 3 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"false",
+			"Vector3d(100, 70, 100)",
+		}
+	elseif #a_Params == 4 then
+		return
+		{
+			"cRoot:Get():GetDefaultWorld()",
+			"Vector3d(100, 70, 100)",
+			"true",
+			"false"
+		}
+	end
+end
+
+
+
 g_Params.ItemCategory = {}
 g_Params.ItemCategory.IsArmor = "E_ITEM_DIAMOND_HORSE_ARMOR"
 g_Params.ItemCategory.IsAxe =   "E_ITEM_DIAMOND_AXE"
@@ -65,6 +148,7 @@ g_Params.ItemCategory.IsTool = "E_ITEM_DIAMOND_PICKAXE"
 
 
 g_Params.cItems = {}
+g_Params.cItems.AddItemGrid = "a_ChestEntity:GetContents()"
 g_Params.cItems.Delete = 0
 g_Params.cItems.Get = 0
 g_Params.cItems.Set =
@@ -125,7 +209,7 @@ g_Params.cPluginManager.ForEachPlugin =
 g_Params.cRoot = {}
 g_Params.cRoot.DoWithPlayerByUUID =
 {
-	"cUUID:GenerateVersion3(g_BotName)",
+	"g_BotUUID",
 	"function(a_Player) g_CallbackCalled = true end"
 }
 
@@ -142,6 +226,13 @@ g_Params.cRoot.GetFurnaceRecipe = "cItem(E_ITEM_RAW_FISH)"
 g_Params.cRoot.GetWorld = "'world'"
 
 
+
+g_Params.cUrlParser = {}
+g_Params.cUrlParser.Parse = "'http://user:password@website.com:9921'"
+g_Params.cUrlParser.ParseAuthorityPart = "'http://user:password@website.com'"
+
+
+
 g_Params.cWorld = {}
 g_Params.cWorld.DoWithPlayer =
 {
@@ -150,7 +241,7 @@ g_Params.cWorld.DoWithPlayer =
 }
 g_Params.cWorld.DoWithPlayerByUUID =
 {
-	"cUUID:GenerateVersion3(g_BotName)",
+	"g_BotUUID",
 	"function() g_CallbackCalled = true end"
 }
 
