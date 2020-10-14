@@ -207,12 +207,6 @@ g_Params.cPluginManager.ForEachPlugin =
 
 
 g_Params.cRoot = {}
-g_Params.cRoot.DoWithPlayerByUUID =
-{
-	"g_BotUUID",
-	"function(a_Player) g_CallbackCalled = true end"
-}
-
 g_Params.cRoot.FindAndDoWithPlayer =
 {
 	"g_BotName",
@@ -239,12 +233,6 @@ g_Params.cWorld.DoWithPlayer =
 	"g_BotName",
 	"function() g_CallbackCalled = true end"
 }
-g_Params.cWorld.DoWithPlayerByUUID =
-{
-	"g_BotUUID",
-	"function() g_CallbackCalled = true end"
-}
-
 g_Params.cWorld.FindAndDoWithPlayer =
 {
 	"g_BotName",

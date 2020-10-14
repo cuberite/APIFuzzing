@@ -147,6 +147,17 @@ world:DoWithPlayer('%s',
 	end)]],	g_BotName, a_FunctionName, a_Inputs)
 end
 
+g_Code.cInventory.FindItem =
+function()
+	return string.format(
+[[cRoot:Get():FindAndDoWithPlayer('%s',
+	function(a_Player)
+		g_CallbackCalled = true
+		a_Player:GetInventory():AddItem(cItem(1, 2))
+		GatherReturnValues(a_Player:GetInventory():FindItem(cItem(1, 2)))
+	end)]],	g_BotName)
+end
+
 
 
 g_Code.cItems = {}
@@ -262,6 +273,19 @@ GatherReturnValues(world:DoWithEntityByID(entityID,
 	end))]]
 end
 
+g_Code.cWorld.DoWithPlayerByUUID =
+function()
+	return string.format(
+[[local uuid = cUUID()
+uuid:FromString('05f673da66b537e3b03b09bbf434403e')
+local world = cRoot:Get():GetDefaultWorld()
+GatherReturnValues(world:DoWithPlayerByUUID(uuid,
+	function(a_Player)
+		g_CallbackCalled = true
+		return true
+	end))]], g_BotName)
+end
+
 g_Code.cWorld.ForEachBlockEntityInChunk =
 function()
 	return
@@ -374,6 +398,18 @@ g_Code.cRoot = {}
 g_Code.cRoot.Class =
 function(a_FunctionName, a_Inputs)
 	return string.format("GatherReturnValues(cRoot:Get():%s(%s))", a_FunctionName, a_Inputs)
+end
+
+g_Code.cRoot.DoWithPlayerByUUID =
+function()
+	return string.format(
+[[local uuid = cUUID()
+uuid:FromString('05f673da66b537e3b03b09bbf434403e')
+GatherReturnValues(cRoot:Get():DoWithPlayerByUUID(uuid,
+	function(a_Player)
+		g_CallbackCalled = true
+		return true
+	end))]], g_BotName)
 end
 
 

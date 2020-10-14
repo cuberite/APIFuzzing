@@ -229,35 +229,11 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cFile = "*"
 	g_IgnoreShared.cIniFile = "*"
 
-	-- ## Deprecated functions ##
-
-	-- Replaced by cNoteEntity:GetNote
-	g_IgnoreShared.cNoteEntity.GetPitch = true
-
-	-- Replaced by cNoteEntity:IncrementNote
-	g_IgnoreShared.cNoteEntity.IncrementPitch = true
-
-	-- Replaced by cNoteEntity:SetNote
-	g_IgnoreShared.cNoteEntity.SetPitch = true
-
-
 	-- ## This has to be fixed in cuberite or in APIDoc ##
-
-	-- This functions returns the port as a number and not as a string
-	g_IgnoreShared.cUrlParser.Parse = true
-	g_IgnoreShared.cUrlParser.ParseAuthorityPart = true
 
 	-- This functions doesn't exists in cuberite
 	-- g_IgnoreShared.cChunkDesc.IsUsingDefaultStructures = true
 	-- g_IgnoreShared.cChunkDesc.SetUseDefaultStructures = true
-
-	-- This functions are missing return types in APIDoc
-	g_IgnoreShared.cRoot.ForEachWorld = true
-	g_IgnoreShared.cRoot.ForEachPlayer = true
-
-	-- Param only accepts a cUUID instance not a UUID string
-	g_IgnoreShared.cWorld.DoWithPlayerByUUID = true
-	g_IgnoreShared.cRoot.DoWithPlayerByUUID = true
 
 	-- Got number; APIDoc: table
 	g_IgnoreShared.cWorld.SpawnSplitExperienceOrbs = true
@@ -265,18 +241,6 @@ function CreateSharedIgnoreTable()
 	-- This functions don't accept Vector3i, but should be able, issue #4415
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
-
-	-- This functions returns a boolean, needs fix in APIDoc
-	g_IgnoreShared.cWorld.GrowTree = true
-	g_IgnoreShared.cWorld.GrowTreeByBiome = true
-	g_IgnoreShared.cWorld.GrowTreeFromSapling = true
-
-	-- This function expects a Vector3i, needs fix in APIDoc and/or cuberite
-	g_IgnoreShared.cWorld.GrowTreeFromSapling = true
-	g_IgnoreShared.cDropSpenserEntity.AddDropSpenserDir = true
-
-	-- This function expects a Vector3i, needs fix in APIDoc
-	g_IgnoreShared.cWorld.GrowRipePlant = { [ "number" ] = true }
 
 	-- Not filtered by function IsDeprecated as the word deprecated is not in the description...
 	g_IgnoreShared.cEntity.Destroy = { [ "bool" ] = true }
