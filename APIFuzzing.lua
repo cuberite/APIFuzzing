@@ -396,6 +396,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 		print("- the fault of this plugin, if a wrong param has been passed or a syntax error")
 		print("- a function that is documented, but not exported or doesn't exists")
 		print("- a missing IsStatic flag in the APIDoc")
+		print("- the param types between the api function and the c++ function doesn't match")
 		print("###")
 		print("")
 
