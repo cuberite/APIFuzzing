@@ -81,6 +81,27 @@ end
 
 
 
+g_Code.cEnderCrystal = {}
+g_Code.cEnderCrystal.Class =
+function(a_FunctionName, a_Inputs)
+        return string.format(
+[[local world = cRoot:Get():GetDefaultWorld()
+local entityID = world:SpawnEnderCrystal(Vector3d(10, 100, 10), true)
+if entityID == 0 then
+       assert(false, "Could not spawn ender crystal")
+end
+
+world:DoWithEntityByID(entityID,
+        function(a_Entity)
+                g_CallbackCalled = true
+                local obj = tolua.cast(a_Entity, "cEnderCrystal")
+                GatherReturnValues(obj:%s(%s))
+        end)]], a_FunctionName, a_Inputs)
+
+end
+
+
+
 g_Code.cEntity = {}
 g_Code.cEntity.Class =
 function(a_FunctionName, a_Inputs)
