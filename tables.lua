@@ -137,6 +137,8 @@ function CreateSharedIgnoreTable()
 
 	-- If a invalid packet is send, the client disconnects
 	g_IgnoreShared.cPlayer.SendMessageRaw = true
+	g_IgnoreShared.cClientHandle.SendSetRawSubTitle = true
+	g_IgnoreShared.cClientHandle.SendSetRawTitle = true
 
 	-- This causes problem for fuzzing / checkapi, as the client name is hardcoded
 	g_IgnoreShared.cPlayer.SetName = true
