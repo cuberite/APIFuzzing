@@ -147,6 +147,10 @@ function CreateSharedIgnoreTable()
 	-- Don't kick the player
 	g_IgnoreShared.cClientHandle.Kick = true
 
+	-- Ignore for now
+	g_IgnoreShared.cClientHandle.SendBossBarAdd = true
+	g_IgnoreShared.cClientHandle.SendBossBarUpdateStyle = true
+
 	-- Needs special handling
 	g_IgnoreShared.cBlockArea.Create = true
 	g_IgnoreShared.cBlockArea.DumpToRawFile = true
@@ -231,6 +235,10 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cFile = "*"
 	g_IgnoreShared.cIniFile = "*"
 
+	-- TODO: Check this class and function
+	g_IgnoreShared.StatisticsManager = "*"
+	g_IgnoreShared.cPlayer.GetStatistics = true
+
 	-- ## This has to be fixed in cuberite or in APIDoc ##
 
 	-- This functions doesn't exists in cuberite
@@ -244,11 +252,33 @@ function CreateSharedIgnoreTable()
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityAt = true
 	g_IgnoreShared.cBlockArea.DoWithBlockEntityRelAt = true
 
-	-- Not filtered by function IsDeprecated as the word deprecated is not in the description...
+	-- Not filtered by function IsDeprecated as the word deprecated is not in the description
 	g_IgnoreShared.cEntity.Destroy = { [ "bool" ] = true }
+
+	-- Missing overloaded functions that acceepts a Vector3i or Vector3d
+	-- Also this functions are not marked as deprecated
+	g_IgnoreShared.cWorld.SetBlock = { [ "number, number, number, number, number" ] = true }
+	g_IgnoreShared.cWorld.GetBlockTypeMeta = { [ "number, number, number" ] = true }
+	g_IgnoreShared.cWorld.GetBlockSkyLight = { [ "number, number, number" ] = true }
+	g_IgnoreShared.cWorld.GetBlockInfo = { [ "number, number, number" ] = true }
+
+	-- The function is not exported to the api anymore
+	-- Missing overloaded function that accepts a Vector3i or Vector3d
+	g_IgnoreShared.cWorld.SetBlockMeta = true
 
 
 	-- This functions causes the server to crash
+
+	-- Passing nil for world param crashes the server, #5190
+	g_IgnoreShared.cPlayer.SetBedPos = true
+
+	-- Negative y-position crashes the server
+	g_IgnoreShared.cWorld.DigBlock = true
+	g_IgnoreShared.cWorld.GrowTree = true
+	g_IgnoreShared.cWorld.QueueBlockForTick = true
+	g_IgnoreShared.cWorld.IsBlockDirectlyWatered = true
+	g_IgnoreShared.cWorld.SetTrapdoorOpen = true
+	g_IgnoreShared.cWorld.IsTrapdoorOpen = true
 
 	-- Can result in  a verification failure
 	g_IgnoreShared.cWorld.GenerateChunk = true

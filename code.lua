@@ -185,7 +185,7 @@ g_Code.cItems = {}
 g_Code.cItems.AddItemGrid =
 function()
 	return string.format(
-[[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(10, 100, 10), E_BLOCK_CHEST, 0)
 cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
 	function(a_ChestEntity)
 		g_CallbackCalled = true
@@ -200,7 +200,7 @@ g_Code.cItemGrid = {}
 g_Code.cItemGrid.Class =
 function(a_FunctionName, a_Inputs)
 	return string.format(
-[[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(10, 100, 10), E_BLOCK_CHEST, 0)
 cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
 	function(a_ChestEntity)
 		g_CallbackCalled = true
@@ -213,7 +213,7 @@ end
 g_Code.cItemGrid.FindItem =
 function(a_Inputs)
 	return string.format(
-[[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_CHEST, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(10, 100, 10), E_BLOCK_CHEST, 0)
 cRoot:Get():GetDefaultWorld():DoWithChestAt(10, 100, 10,
 	function(a_ChestEntity)
 		a_ChestEntity:GetContents():AddItem(cItem(1, 1))
@@ -310,7 +310,7 @@ end
 g_Code.cWorld.ForEachBlockEntityInChunk =
 function()
 	return
-[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_CHEST, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(5, 100, 5), E_BLOCK_CHEST, 0)
 GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachBlockEntityInChunk(0, 0,
 	function(a_BlockEntity)
 		g_CallbackCalled = true
@@ -321,7 +321,7 @@ end
 g_Code.cWorld.ForEachBrewingstandInChunk =
 function()
 	return
-[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_BREWING_STAND, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(5, 100, 5), E_BLOCK_BREWING_STAND, 0)
 GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachBrewingstandInChunk(0, 0,
 	function(a_ChestEntity)
 		g_CallbackCalled = true
@@ -332,7 +332,7 @@ end
 g_Code.cWorld.ForEachChestInChunk =
 function()
 	return
-[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_CHEST, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(5, 100, 5), E_BLOCK_CHEST, 0)
 GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachChestInChunk(0, 0,
 	function(a_ChestEntity)
 		g_CallbackCalled = true
@@ -367,7 +367,7 @@ end
 g_Code.cWorld.ForEachFurnaceInChunk =
 function()
 	return
-[[cRoot:Get():GetDefaultWorld():SetBlock(5, 100, 5, E_BLOCK_FURNACE, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(5, 100, 5), E_BLOCK_FURNACE, 0)
 GatherReturnValues(cRoot:Get():GetDefaultWorld():ForEachFurnaceInChunk(0, 0,
 	function(a_FurnaceEntity)
 		g_CallbackCalled = true
@@ -378,7 +378,7 @@ end
 g_Code.cWorld.GetSignLines =
 function(a_Inputs)
 	return
-[[cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, E_BLOCK_SIGN_POST, 0)
+[[cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(10, 100, 10), E_BLOCK_SIGN_POST, 0)
 GatherReturnValues(cRoot:Get():GetDefaultWorld():GetSignLines(10, 100, 10))]]
 end
 

@@ -278,7 +278,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 	if not(a_IsStatic) then
 		-- TODO: Fix that...
 		if a_ClassName ~= "cBlockArea" and g_BlockEntityCallBackToBlockType[a_FunctionName] ~= nil then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 100, 10, " .. g_BlockEntityCallBackToBlockType[a_FunctionName] .. ", 0)"
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(10, 100, 10), " .. g_BlockEntityCallBackToBlockType[a_FunctionName] .. ", 0)"
 			fncTest = fncTest .. " GatherReturnValues(cRoot:Get():GetDefaultWorld():" .. a_FunctionName .. "(10, 100, 10,"
 			fncTest = fncTest .. "function(a_BlockEntity) g_CallbackCalled = true end))"
 		elseif g_Code[a_ClassName] ~= nil then
@@ -288,7 +288,7 @@ function TestFunction(a_API, a_ClassName, a_FunctionName, a_ReturnTypes, a_Input
 				fncTest = g_Code[a_ClassName].Class(a_FunctionName, a_Inputs)
 			end
 		elseif g_BlockEntityToBlockType[a_ClassName] ~= nil then
-			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(10, 20, 10, ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
+			fncTest = "cRoot:Get():GetDefaultWorld():SetBlock(Vector3i(10, 20, 10), ".. g_BlockEntityToBlockType[a_ClassName] ..", 0)"
 			fncTest = fncTest .. " cRoot:Get():GetDefaultWorld():DoWithBlockEntityAt(10, 20, 10,"
 			fncTest = fncTest .. " function(a_BlockEntity) g_CallbackCalled = true local blockEntity = tolua.cast(a_BlockEntity, '" .. a_ClassName ..  "')"
 			fncTest = fncTest .. " GatherReturnValues(blockEntity:" .. a_FunctionName .. "(" .. a_Inputs .. ")) end)"
