@@ -101,6 +101,8 @@ function CreateInputs(a_ClassName, a_FunctionName, a_Params)
 	-- end
 
 	-- Testing this params can take a long time
+	-- I recommend to enable this for loop only under a linux based system
+	-- Under windows fuzzing then requires much more time to finish
 	-- for i = -100, 100 do
 	-- 	CreateAndFill(inputs, i, tbRes)
 	-- end
